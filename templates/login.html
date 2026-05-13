@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card" style="max-width: 400px; margin: 0 auto;">
+        <h2 style="margin-top: 0;">Вход в систему</h2>
+        <form method="post">
+            <div style="margin-bottom: 1rem;">
+                <label>Логин</label>
+                <input type="text" name="username" required style="width: 90%;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label>Пароль</label>
+                <input type="password" name="password" required style="width: 90%;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+        </form>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Демо: admin / admin123</p>
+    </div>
+{% endblock %}

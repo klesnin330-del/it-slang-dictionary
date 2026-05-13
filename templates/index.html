@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Поиск терминов</h2>
+    <form method="get" class="search-box">
+        <input type="text" name="q" placeholder="Введите термин..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
+
+    <ul class="filter-list">
+        <li><a href="{{ url_for('index') }}" class="{% if not request.args.get('category') %}active{% endif %}">Все</a></li>
+        {% for cat in categories %}
+            <li><a href="{{ url_for('index', category=cat.id) }}" class="{% if request.args.get('category') == cat.id|string %}active{% endif %}">{{ cat.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    {% if terms %}
+        {% for term in terms %}
+            <div class="card">
+                <div style="display: flex; gap: 2rem;">
+                    <!-- Левая часть: термин, определение, категории -->
+                    <div style="flex: 1;">
+                        <h3 class="term-title">
+                            <a href="{{ url_for('term_detail', term_id=term.id) }}" style="text-decoration: none; color: inherit;">
+                                {{ term.term_name }}
+                            </a>
+                        </h3>
+                        <span class="origin">{{ term.origin }}</span>
+                        
+                        <!-- Категории -->
+                        <div style="margin: 10px 0;">
+                            {% for cat in term.categories %}
+                                <span class="badge">{{ cat.name }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Значения -->
+                        {% for def in term.definitions %}
+                            <div class="definition" style="margin: 15px 0; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                                {{ def.definition_text }}
+                                {% if def.style_note %}
+                                    <small style="color: #6c757d;">({{ def.style_note }})</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Правая часть: примеры употребления -->
+                    {% if term.definitions and term.definitions[0].examples %}
+                        <div style="flex: 0 0 300px; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 3px solid #0d6efd;">
+                            <strong style="color: #495057; font-size: 0.9rem; display: block; margin-bottom: 10px;">📌 Примеры употребления:</strong>
+                            {% for def in term.definitions %}
+                                {% for example in def.examples %}
+                                    <p style="margin: 8px 0; font-style: italic; color: #555; font-size: 0.9rem; line-height: 1.4;">
+                                        «{{ example.example_text }}»
+                                    </p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Связанные термины (внизу) -->
+                {% if term.outgoing_relations %}
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e9ecef;">
+                        <small style="color: #6c757d;">
+                            <strong>Связано:</strong>
+                            {% for rel in term.outgoing_relations %}
+                                <a href="{{ url_for('term_detail', term_id=rel.term_2.id) }}" style="color: #0d6efd; margin-right: 8px;">
+                                    {{ rel.term_2.term_name }}
+                                </a>
+                            {% endfor %}
+                        </small>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <p>Ничего не найдено. Попробуйте другой запрос или категорию.</p>
+        </div>
+    {% endif %}
+{% endblock %}

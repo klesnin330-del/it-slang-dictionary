@@ -1,0 +1,21 @@
+body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; color: #333; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+header { background: #fff; border-bottom: 1px solid #dee2e6; padding: 1rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.container { max-width: 900px; margin: 0 auto; padding: 0 20px; width: 100%; }
+.logo { font-size: 1.5rem; font-weight: bold; color: #0d6efd; text-decoration: none; }
+main { flex: 1; padding: 2rem 0; }
+.search-box { display: flex; gap: 10px; margin-bottom: 2rem; }
+input[type="text"], input[type="password"] { flex: 1; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-size: 16px; }
+.btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-block; }
+.btn-primary { background: #0d6efd; color: white; }
+.btn-danger { background: #dc3545; color: white; font-size: 0.8rem; padding: 5px 10px; }
+.card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e9ecef; }
+.term-title { font-size: 1.8rem; color: #212529; margin-bottom: 0.5rem; }
+.origin { color: #6c757d; font-style: italic; margin-bottom: 1rem; display: block; }
+.definition { font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem; border-left: 4px solid #0d6efd; padding-left: 1rem; }
+.example { background: #f1f8ff; padding: 0.8rem; border-radius: 6px; font-style: italic; color: #495057; margin-top: 0.5rem; }
+.badge { display: inline-block; padding: 4px 8px; background: #e9ecef; color: #495057; border-radius: 4px; font-size: 0.85rem; margin-right: 5px; }
+.filter-list { list-style: none; padding: 0; margin-bottom: 2rem; display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-list li a { text-decoration: none; color: #0d6efd; border: 1px solid #0d6efd; padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; }
+.filter-list li a:hover, .filter-list li a.active { background: #0d6efd; color: white; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 12px; border-bottom: 1px solid #dee2e6; text-align: left; }
