@@ -1,30 +1,113 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Панель управления</h2>
-    <div class="card">
-        <h3>Добавить термин</h3>
-        <form method="post" action="{{ url_for('create_term') }}">
-            <input type="text" name="term_name" placeholder="Термин" required style="margin-bottom: 5px;">
-            <input type="text" name="definition" placeholder="Определение" required style="margin-bottom: 5px;">
-            <button type="submit" class="btn btn-primary">Создать</button>
-        </form>
-    </div>
+<div style="max-width: 950px; margin: 0 auto;">
+    <h2>Панель управления администратора</h2>
 
-    <h3>Список терминов</h3>
-    <table>
-        <thead><tr><th>ID</th><th>Термин</th><th>Происхождение</th><th>Действия</th></tr></thead>
-        <tbody>
-            {% for term in terms %}
-            <tr>
-                <td>{{ term.id }}</td>
-                <td>{{ term.term_name }}</td>
-                <td>{{ term.origin }}</td>
-                <td>
-                    <a href="{{ url_for('term_detail', term_id=term.id) }}" class="btn" style="font-size: 0.8rem; padding: 4px 8px; background: #e9ecef;">Смотреть</a>
-                    <a href="{{ url_for('delete_term', term_id=term.id) }}" class="btn btn-danger" onclick="return confirm('Удалить?')">X</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% if not editing %}
+        <!-- Реестр словарных статей -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <h3>Реестр терминов</h3>
+            {% if terms %}
+            <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                    <tr style="background: #f8f9fa; text-align: left;">
+                        <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Термин</th>
+                        <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Статус публикации</th>
+                        <th style="padding: 12px; border-bottom: 2px solid #dee2e6;">Действия администратора</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in terms %}
+                    <tr style="border-bottom: 1px solid #e9ecef;">
+                        <td style="padding: 12px;">
+                            <strong>{{ t.term_name }}</strong><br>
+                            <small style="color: #6c757d;">{{ t.origin }}</small>
+                        </td>
+                        <td style="padding: 12px;">
+                            {% if t.status.name == 'Опубликован' %}
+                                <span style="color: #198754; font-weight: 500;">● Опубликован</span>
+                            {% else %}
+                                <span style="color: #fd7e14; font-weight: 500;">● Черновик</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 12px;">
+                            <a href="{{ url_for('edit_term', term_id=t.id) }}" class="btn btn-sm btn-primary" style="margin-right: 8px;">Изменить</a>
+                            <a href="{{ url_for('delete_term', term_id=t.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Подтвердите удаление словарной статьи из базы данных.')">Удалить</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p style="margin-top: 1rem; color: #6c757d;">Реестр пуст. Добавьте первую запись через форму ниже.</p>
+            {% endif %}
+        </div>
+
+        <!-- Форма создания записи -->
+        <div class="card" style="margin-top: 2rem;">
+            <h3>Добавление новой словарной статьи</h3>
+            <form method="post" action="{{ url_for('create_term') }}">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина</label>
+                        <input type="text" name="term_name" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Происхождение</label>
+                        <input type="text" name="origin" placeholder="Например: Англ. Debug + суффикс" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Толкование</label>
+                    <input type="text" name="definition" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Пример употребления</label>
+                    <input type="text" name="example" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
+                    <input type="text" name="source_name" placeholder="Например: Habr, Stack Overflow, документация" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <button type="submit" class="btn btn-primary">Сохранить запись</button>
+            </form>
+        </div>
+    {% else %}
+        <!-- Форма редактирования записи -->
+        <div class="card">
+            <h3>Редактирование записи: «{{ term.term_name }}»</h3>
+            <form method="post">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина</label>
+                    <input type="text" name="term_name" value="{{ term.term_name }}" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Происхождение</label>
+                    <input type="text" name="origin" value="{{ term.origin }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Толкование</label>
+                    <textarea name="definition" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px; height: 80px;">{{ def_text }}</textarea>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Пример употребления</label>
+                    <input type="text" name="example" value="{{ ex_text }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
+                    <input type="text" name="source_name" value="{{ src_name }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Статус публикации</label>
+                    <select name="status" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                        <option value="Опубликован" {% if status_name == 'Опубликован' %}selected{% endif %}>Опубликован</option>
+                        <option value="Черновик" {% if status_name == 'Черновик' %}selected{% endif %}>Черновик</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Применить изменения</button>
+                <a href="{{ url_for('admin') }}" class="btn" style="margin-left: 1rem; color: #6c757d; text-decoration: none;">Отмена</a>
+            </form>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

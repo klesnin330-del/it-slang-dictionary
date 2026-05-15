@@ -1,82 +1,140 @@
 {% extends "base.html" %}
+{% block title %}Словарь ИТ-жаргона{% endblock %}
+
 {% block content %}
-    <h2>Поиск терминов</h2>
-    <form method="get" class="search-box">
-        <input type="text" name="q" placeholder="Введите термин..." value="{{ query }}">
-        <button type="submit" class="btn btn-primary">Найти</button>
-    </form>
+<div class="page-header">
+    <h1>Словарь ИТ-жаргона</h1>
+    <p>Профессиональный сленг с примерами употребления</p>
+</div>
 
-    <ul class="filter-list">
-        <li><a href="{{ url_for('index') }}" class="{% if not request.args.get('category') %}active{% endif %}">Все</a></li>
-        {% for cat in categories %}
-            <li><a href="{{ url_for('index', category=cat.id) }}" class="{% if request.args.get('category') == cat.id|string %}active{% endif %}">{{ cat.name }}</a></li>
-        {% endfor %}
-    </ul>
+<div class="main-layout">
+    <!-- Левый сайдбар с алфавитом -->
+    <aside class="alphabet-sidebar">
+        <div class="alphabet-sidebar-inner">
+            {% set alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ' %}
+            {% for letter in alphabet %}
+                <a href="#letter-{{ letter }}" class="alphabet-link" data-letter="{{ letter }}" title="Перейти к букве {{ letter }}">{{ letter }}</a>
+            {% endfor %}
+        </div>
+    </aside>
 
-    {% if terms %}
-        {% for term in terms %}
-            <div class="card">
-                <div style="display: flex; gap: 2rem;">
-                    <!-- Левая часть: термин, определение, категории -->
-                    <div style="flex: 1;">
-                        <h3 class="term-title">
-                            <a href="{{ url_for('term_detail', term_id=term.id) }}" style="text-decoration: none; color: inherit;">
-                                {{ term.term_name }}
-                            </a>
-                        </h3>
-                        <span class="origin">{{ term.origin }}</span>
-                        
-                        <!-- Категории -->
-                        <div style="margin: 10px 0;">
-                            {% for cat in term.categories %}
-                                <span class="badge">{{ cat.name }}</span>
-                            {% endfor %}
-                        </div>
+    <!-- Контент -->
+    <div class="content-area">
+        <!-- Фильтры категорий -->
+        <div class="category-filters">
+            <a href="{{ url_for('index') }}" class="{% if not request.args.get('category') %}active{% endif %}">Все</a>
+            {% for cat in categories %}
+                <a href="{{ url_for('index', category=cat.id) }}" class="{% if request.args.get('category') == cat.id|string %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
+        </div>
 
-                        <!-- Значения -->
-                        {% for def in term.definitions %}
-                            <div class="definition" style="margin: 15px 0; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
-                                {{ def.definition_text }}
-                                {% if def.style_note %}
-                                    <small style="color: #6c757d;">({{ def.style_note }})</small>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-
-                    <!-- Правая часть: примеры употребления -->
-                    {% if term.definitions and term.definitions[0].examples %}
-                        <div style="flex: 0 0 300px; background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 3px solid #0d6efd;">
-                            <strong style="color: #495057; font-size: 0.9rem; display: block; margin-bottom: 10px;">📌 Примеры употребления:</strong>
-                            {% for def in term.definitions %}
-                                {% for example in def.examples %}
-                                    <p style="margin: 8px 0; font-style: italic; color: #555; font-size: 0.9rem; line-height: 1.4;">
-                                        «{{ example.example_text }}»
-                                    </p>
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
+        <!-- Термины сгруппированы по буквам -->
+        {% if terms %}
+            {% set alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ' %}
+            {% for letter in alphabet %}
+                {# Получаем все термины на текущую букву #}
+                {% set letter_terms = [] %}
+                {% for term in terms|sort(attribute='term_name') %}
+                    {% if term.term_name[0].upper() == letter %}
+                        {% set _ = letter_terms.append(term) %}
                     {% endif %}
-                </div>
+                {% endfor %}
+                
+                {# Если есть термины на эту букву - выводим секцию #}
+                {% if letter_terms %}
+                    <div id="letter-{{ letter }}" class="letter-section">
+                        <div class="letter-header">
+                            <h2>{{ letter }}</h2>
+                        </div>
+                        <div class="terms-list">
+                            {% for term in letter_terms %}
+                                <div class="term-card">
+                                    <div class="term-info">
+                                        <h3><a href="{{ url_for('term_detail', term_id=term.id) }}">{{ term.term_name }}</a></h3>
+                                        <div class="term-origin">{{ term.origin }}</div>
+                                        <div class="term-categories">
+                                            {% for cat in term.categories %}
+                                                <span>{{ cat.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        {% for def in term.definitions %}
+                                            <div class="term-definition">
+                                                {{ def.definition_text }}
+                                                {% if def.style_note %}
+                                                    <small style="color: #94a3b8;">({{ def.style_note }})</small>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
 
-                <!-- Связанные термины (внизу) -->
-                {% if term.outgoing_relations %}
-                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e9ecef;">
-                        <small style="color: #6c757d;">
-                            <strong>Связано:</strong>
-                            {% for rel in term.outgoing_relations %}
-                                <a href="{{ url_for('term_detail', term_id=rel.term_2.id) }}" style="color: #0d6efd; margin-right: 8px;">
-                                    {{ rel.term_2.term_name }}
-                                </a>
+                                    {% if term.definitions and term.definitions[0].examples %}
+                                        <div class="term-examples">
+                                            <div class="term-examples-title">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                    <polyline points="22,6 12,13 2,6"/>
+                                                </svg>
+                                                Примеры
+                                            </div>
+                                            {% for def in term.definitions %}
+                                                {% for example in def.examples %}
+                                                    <p>«{{ example.example_text }}»</p>
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             {% endfor %}
-                        </small>
+                        </div>
                     </div>
                 {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Ничего не найдено</h3>
+                <p>Попробуйте изменить запрос или выберите другую категорию</p>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="card">
-            <p>Ничего не найдено. Попробуйте другой запрос или категорию.</p>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Подсветка активной буквы при скролле
+    const letterSections = document.querySelectorAll('.letter-section');
+    const alphabetLinks = document.querySelectorAll('.alphabet-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const letter = entry.target.id.replace('letter-', '');
+                alphabetLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.letter === letter);
+                });
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '-120px 0px -65% 0px',
+        threshold: 0
+    });
+
+    letterSections.forEach(section => {
+        observer.observe(section);
+    });
+
+    // Плавная прокрутка к буквам
+    alphabetLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
 {% endblock %}
