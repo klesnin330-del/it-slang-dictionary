@@ -1,29 +1,3 @@
-# === PYTHON ===
-__pycache__/
-*.py[cod]
-*$py.class
-
-# === ВИРТУАЛЬНОЕ ОКРУЖЕНИЕ (КОММИТИТЬ НЕЛЬЗЯ) ===
-venv/
-env/
-ENV/
-
-# === IDE И СИСТЕМНЫЕ ФАЙЛЫ ===
-.vscode/
-.idea/
-*.swp
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# === ЛОГИ И СЕКРЕТЫ ===
+```
 *.log
-.env
-.flaskenv
-
-# === ВРЕМЕННЫЕ ФАЙЛЫ ===
-*.tmp
-*.bak
-
-# ⚠️ ВАЖНО: Мы намеренно НЕ игнорируем *.db, чтобы dictionary.db попал на GitHub для деплоя.
-# Никогда не добавляй сюда dictionary.db, иначе сайт на Render запустится пустым!
+```

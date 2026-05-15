@@ -7,18 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-dark: #1d4ed8;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
             --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #0f172a;
+            --text: #1e293b;
             --text-secondary: #64748b;
             --border: #e2e8f0;
-            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
-            --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
-            --radius: 12px;
-            --header-height: 70px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --header-height: 72px;
         }
 
         * {
@@ -41,17 +43,17 @@
             left: 0;
             right: 0;
             height: var(--header-height);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(16px) saturate(180%);
             border-bottom: 1px solid var(--border);
             z-index: 1000;
-            box-shadow: var(--shadow);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             height: 100%;
             display: flex;
             align-items: center;
@@ -59,18 +61,23 @@
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.625rem;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover {
+            opacity: 0.85;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 1.75rem;
             align-items: center;
         }
 
@@ -78,12 +85,15 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s;
-            font-size: 0.95rem;
+            transition: all 0.2s;
+            font-size: 0.925rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: var(--radius-sm);
         }
 
         .nav-link:hover {
             color: var(--primary);
+            background: var(--primary-glow);
         }
 
         /* Закреплённая панель поиска */
@@ -92,18 +102,19 @@
             top: var(--header-height);
             left: 0;
             right: 0;
-            background: white;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(16px) saturate(180%);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            padding: 1.125rem 2rem;
             z-index: 999;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
         .search-bar-fixed .search-container {
-            max-width: 720px;
+            max-width: 760px;
             margin: 0 auto;
             display: flex;
-            gap: 0.75rem;
+            gap: 0.875rem;
             align-items: center;
         }
 
@@ -114,27 +125,32 @@
 
         .search-input {
             width: 100%;
-            padding: 12px 45px 12px 18px;
+            padding: 14px 52px 14px 20px;
             border: 2px solid var(--border);
             border-radius: 50px;
             font-size: 1rem;
             font-family: inherit;
             outline: none;
-            transition: all 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-bg);
         }
 
         .search-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 5px var(--primary-glow);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
         }
 
         .voice-search-btn {
             position: absolute;
-            right: 8px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -152,31 +168,37 @@
         }
 
         .voice-search-btn.listening {
-            background: #fee2e2;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc2626;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            50% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
         }
 
         .search-submit {
-            padding: 12px 28px;
-            background: var(--primary);
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
             border-radius: 50px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
         .search-submit:hover {
-            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        .search-submit:active {
+            transform: translateY(0);
         }
 
         /* Основной контент с отступом под фиксированные элементы */
@@ -253,10 +275,9 @@
         /* Сайдбар с алфавитом */
         .alphabet-sidebar {
             position: fixed;
-            left: 24px;
-            top: calc(var(--header-height) + 100px); /* Отступ под шапку и поиск */
-            transform: translateY(0); /* Убрали центрирование */
-            width: 52px;
+            left: 32px;
+            top: calc(var(--header-height) + 100px);
+            width: 56px;
             flex-shrink: 0;
             z-index: 100;
         }
@@ -264,15 +285,20 @@
         .alphabet-sidebar-inner {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             background: var(--card-bg);
-            padding: 12px 6px;
+            padding: 14px 8px;
             border-radius: 50px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            max-height: calc(100vh - 200px); /* Ограничение высоты */
+            max-height: calc(100vh - 200px);
             overflow-y: auto;
             scrollbar-width: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .alphabet-sidebar-inner:hover {
+            box-shadow: var(--shadow-hover);
         }
 
         .alphabet-sidebar-inner::-webkit-scrollbar {
@@ -286,25 +312,27 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.775rem;
             font-weight: 600;
             color: var(--text-secondary);
             border-radius: 50%;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
+            background: transparent;
         }
 
         .alphabet-link:hover {
-            background: var(--primary-light);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.12);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .alphabet-link.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             transform: scale(1.15);
-            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
         }
 
         /* Отступ для контента чтобы не наезжал на сайдбар */
@@ -347,19 +375,37 @@
         .term-card {
             background: var(--card-bg);
             border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
-            gap: 1.5rem;
+            gap: 1.75rem;
             flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .term-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .term-card:hover {
             box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+        }
+
+        .term-card:hover::before {
+            opacity: 1;
         }
 
         .term-info {
@@ -521,9 +567,9 @@
 
     <!-- Закреплённая панель поиска -->
     <div class="search-bar-fixed">
-        <div class="search-container">
+        <form method="get" action="{{ url_for('index') }}" class="search-container">
             <div class="search-input-wrapper">
-                <input type="text" id="searchInput" class="search-input" placeholder="Поиск термина или нажмите микрофон..." value="{{ query or '' }}" autocomplete="off">
+                <input type="text" id="searchInput" name="q" class="search-input" placeholder="Поиск термина или нажмите микрофон..." value="{{ query or '' }}" autocomplete="off">
                 <button type="button" id="voiceSearchBtn" class="voice-search-btn" title="Голосовой поиск">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
@@ -533,8 +579,8 @@
                     </svg>
                 </button>
             </div>
-            <button type="button" onclick="document.querySelector('.search-input').closest('form').submit()" class="search-submit" if="searchForm">Найти</button>
-        </div>
+            <button type="submit" class="search-submit">Найти</button>
+        </form>
     </div>
 
     <div class="main-wrapper">
@@ -563,10 +609,9 @@
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 searchInput.value = transcript;
-                // Автоматический поиск после распознавания
+                // Автоматическая отправка формы после распознавания
                 setTimeout(() => {
-                    const form = searchInput.closest('form');
-                    if (form) form.submit();
+                    searchInput.closest('form').submit();
                 }, 300);
             };
 
@@ -581,21 +626,14 @@
                     alert('Речь не обнаружена. Попробуйте ещё раз.');
                 } else if (event.error === 'audio-capture') {
                     alert('Микрофон не найден. Проверьте подключение.');
-                } else {
+                } else if (event.error !== 'aborted') {
                     alert('Не удалось распознать речь. Попробуйте ещё раз.');
                 }
             };
         } else {
             voiceSearchBtn.style.display = 'none';
+            console.log('Web Speech API не поддерживается в этом браузере');
         }
-
-        // Отправка формы по кнопке "Найти"
-        document.querySelector('.search-submit').addEventListener('click', function(e) {
-            e.preventDefault();
-            const form = this.closest('.search-bar-fixed').querySelector('form') || 
-                        document.querySelector('form[method="get"]');
-            if (form) form.submit();
-        });
     </script>
 </body>
 </html>
