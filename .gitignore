@@ -1,1 +1,8 @@
-Nothing should be ignored since only a source file (templates/base.html) was modified and there are no build artifacts, dependencies, or temporary files in the changes.
+```gitignore
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Log files
+*.log
+```
