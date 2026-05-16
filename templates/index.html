@@ -49,7 +49,19 @@
                             <article class="term-card">
                                 <div class="term-info">
                                     <h3><a href="{{ url_for('term_detail', term_id=term.id) }}">{{ term.term_name }}</a></h3>
-                                    {% if term.origin %}
+                                    {% if term.transcription or term.grammar_notes %}
+                                    <div style="margin: 5px 0; display: flex; gap: 12px; flex-wrap: wrap;">
+                                        {% if term.transcription %}
+                                            <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif; font-size: 0.9rem;">{{ term.transcription }}</span>
+                                        {% endif %}
+                                        {% if term.grammar_notes %}
+                                            <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ term.grammar_notes }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% if term.origin_word %}
+                                        <p class="term-origin">Исходное слово: {{ term.origin_word }}</p>
+                                    {% elif term.origin %}
                                         <p class="term-origin">{{ term.origin }}</p>
                                     {% endif %}
                                     {% if term.categories %}
@@ -100,7 +112,19 @@
                                     <article class="term-card">
                                         <div class="term-info">
                                             <h3><a href="{{ url_for('term_detail', term_id=term.id) }}">{{ term.term_name }}</a></h3>
-                                            {% if term.origin %}
+                                            {% if term.transcription or term.grammar_notes %}
+                                            <div style="margin: 5px 0; display: flex; gap: 12px; flex-wrap: wrap;">
+                                                {% if term.transcription %}
+                                                    <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif; font-size: 0.9rem;">{{ term.transcription }}</span>
+                                                {% endif %}
+                                                {% if term.grammar_notes %}
+                                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ term.grammar_notes }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            {% if term.origin_word %}
+                                                <p class="term-origin">Исходное слово: {{ term.origin_word }}</p>
+                                            {% elif term.origin %}
                                                 <p class="term-origin">{{ term.origin }}</p>
                                             {% endif %}
                                             {% if term.categories %}

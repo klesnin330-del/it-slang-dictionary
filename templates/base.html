@@ -115,23 +115,23 @@
         .header-search {
             justify-self: center;
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             display: flex;
             justify-content: center;
         }
 
         .header-search-form {
-            display: flex;
-            gap: 0.5rem;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
             align-items: center;
             position: relative;
             width: 100%;
         }
 
         .header-search-input {
-            flex: 1;
-            padding: 10px 48px 10px 16px;
+            padding: 10px 44px 10px 16px;
             border: 2px solid var(--border);
             border-radius: 50px;
             font-size: 0.95rem;
@@ -140,6 +140,7 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--card-bg);
             width: 100%;
+            min-width: 200px;
         }
 
         .header-search-input:focus {
@@ -152,12 +153,8 @@
         }
 
         .header-voice-btn {
-            position: absolute;
-            right: 48px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -167,7 +164,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
-            z-index: 10;
+            flex-shrink: 0;
         }
 
         .header-voice-btn:hover {
@@ -182,8 +179,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .header-search-submit {
@@ -199,6 +196,7 @@
             font-family: inherit;
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
             flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .header-search-submit:hover {
