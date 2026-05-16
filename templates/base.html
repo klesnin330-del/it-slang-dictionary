@@ -51,14 +51,13 @@
         }
 
         .header-content {
-            max-width: 1280px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 3rem;
+            padding: 0 2rem;
             height: 100%;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
             align-items: center;
-            justify-content: center;
-            gap: 2rem;
             position: relative;
         }
 
@@ -72,8 +71,7 @@
             gap: 0.625rem;
             transition: opacity 0.2s;
             white-space: nowrap;
-            position: absolute;
-            left: 3rem;
+            justify-self: start;
         }
 
         .logo:hover {
@@ -84,7 +82,7 @@
             display: flex;
             gap: 2rem;
             align-items: center;
-            flex: 1;
+            justify-self: end;
         }
 
         .nav-link {
@@ -105,15 +103,20 @@
 
         /* Поиск в хэдере */
         .header-search {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 2rem;
+            justify-self: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
         }
 
         .header-search-form {
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            position: relative;
+            width: 100%;
         }
 
         .header-search-input {
@@ -140,11 +143,11 @@
 
         .header-voice-btn {
             position: absolute;
-            right: 45px;
+            right: 60px;
             top: 50%;
             transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -168,8 +171,13 @@
             animation: pulse 1.5s infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+
         .header-search-submit {
-            padding: 10px 24px;
+            padding: 10px 28px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
@@ -180,6 +188,7 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            flex-shrink: 0;
         }
 
         .header-search-submit:hover {
@@ -452,8 +461,11 @@
             background: #f8fafc;
             border-radius: 10px;
             padding: 1rem 1.25rem;
-            min-width: 240px;
+            width: 320px;
+            max-width: 320px;
+            min-width: 320px;
             border: 1px solid var(--border);
+            flex-shrink: 0;
         }
 
         .term-examples-title {
@@ -585,21 +597,26 @@
             .term-examples {
                 min-width: auto;
                 width: 100%;
+                max-width: none;
             }
         }
 
         @media (max-width: 600px) {
             .header-content {
                 padding: 0 1rem;
+                grid-template-columns: 1fr;
             }
             .logo {
                 font-size: 1.2rem;
+                justify-self: center;
+                margin-bottom: 0.5rem;
             }
             .nav-links {
                 display: none;
             }
             .header-search {
-                margin: 0 1rem;
+                margin: 0;
+                max-width: 100%;
             }
             .header-search-input {
                 padding: 8px 40px 8px 12px;
@@ -610,7 +627,7 @@
                 font-size: 0.85rem;
             }
             .main-wrapper {
-                margin-top: var(--header-height);
+                margin-top: calc(var(--header-height) + 20px);
             }
         }
     </style>
@@ -624,10 +641,10 @@
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                 </svg>
-                Словарь IT-сленга v0.1
+                Словарь IT-сленга v0.2
             </a>
             <div class="header-search">
-                <form method="get" action="{{ url_for('index') }}" class="header-search-form" style="position: relative; max-width: 100%;">
+                <form method="get" action="{{ url_for('index') }}" class="header-search-form">
                     <input type="text" id="headerSearchInput" name="q" class="header-search-input" placeholder="Поиск термина..." value="{{ query or '' }}" autocomplete="off">
                     <button type="button" id="headerVoiceSearchBtn" class="header-voice-btn" title="Голосовой поиск">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
