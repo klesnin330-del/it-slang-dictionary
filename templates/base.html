@@ -505,6 +505,87 @@
             color: #cbd5e1;
         }
 
+        /* Стили для страницы термина */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .term-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .origin {
+            color: var(--text-secondary);
+            font-style: italic;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-right: 6px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .badge:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .definition {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .definition:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 1.5rem 0;
+        }
+
         /* Адаптивность */
         @media (max-width: 900px) {
             .alphabet-sidebar {
