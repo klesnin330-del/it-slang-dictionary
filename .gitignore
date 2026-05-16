@@ -1,27 +1,11 @@
-```gitignore
-# Compiled and build artifacts
-*.pyc
+```
+# Compiled Python files
 __pycache__/
+*.pyc
 
-# Dependencies
-.venv/
-venv/
-node_modules/
-
-# Logs and temp files
+# Logs
 *.log
-*.tmp
-*.swp
 
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
-.vscode/
-.idea/
-
-# Original rules preserved
-*.log
+# Database files
+instance/*.db
 ```
