@@ -142,11 +142,23 @@ def admin():
 def create_term():
     term_name = request.form.get('term_name')
     origin = request.form.get('origin')
-    definition_text = request.form.get('definition')
-    example_text = request.form.get('example')
+    transcription = request.form.get('transcription')
+    grammar_notes = request.form.get('grammar_notes')
+    origin_word = request.form.get('origin_word')
+    etymology_note = request.form.get('etymology_note')
+    year_fixed = request.form.get('year_fixed')
     source_name = request.form.get('source_name')
+    
+    # Get lists of definitions, examples, style notes
+    definition_texts = request.form.getlist('definition_text[]')
+    style_notes = request.form.getlist('style_note[]')
+    example_texts = request.form.getlist('example_text[]')
+    
+    # Get semantic relations
+    related_term_ids = request.form.getlist('related_term_id[]')
+    relation_type_ids = request.form.getlist('relation_type_id[]')
 
-    if term_name and definition_text:
+    if term_name and any(definition_texts):
         published_status = Status.query.filter_by(name='Опубликован').first()
 
         source = None
@@ -160,6 +172,11 @@ def create_term():
         new_term = Term(
             term_name=term_name,
             origin=origin,
+            transcription=transcription,
+            grammar_notes=grammar_notes,
+            origin_word=origin_word,
+            etymology_note=etymology_note,
+            year_fixed=year_fixed,
             user_id=current_user.id,
             status_id=published_status.id,
             source_id=source.id if source else None
@@ -167,12 +184,29 @@ def create_term():
         db.session.add(new_term)
         db.session.flush()
 
-        new_def = Definition(term_id=new_term.id, definition_text=definition_text)
-        db.session.add(new_def)
-        db.session.flush()
+        # Add multiple definitions
+        for i, def_text in enumerate(definition_texts):
+            if def_text.strip():
+                new_def = Definition(
+                    term_id=new_term.id, 
+                    definition_text=def_text,
+                    style_note=style_notes[i] if i < len(style_notes) and style_notes[i].strip() else None
+                )
+                db.session.add(new_def)
+                db.session.flush()
+                
+                # Add example for this definition if provided
+                if i < len(example_texts) and example_texts[i].strip():
+                    db.session.add(Example(definition_id=new_def.id, example_text=example_texts[i]))
 
-        if example_text:
-            db.session.add(Example(definition_id=new_def.id, example_text=example_text))
+        # Add semantic relations
+        for i, related_id in enumerate(related_term_ids):
+            if related_id.strip() and i < len(relation_type_ids) and relation_type_ids[i].strip():
+                db.session.add(TermRelation(
+                    term_1_id=new_term.id,
+                    term_2_id=int(related_id),
+                    relation_type_id=int(relation_type_ids[i])
+                ))
 
         db.session.commit()
         flash('Словарная статья успешно добавлена в реестр.', 'success')
@@ -187,6 +221,11 @@ def edit_term(term_id):
     if request.method == 'POST':
         term.term_name = request.form.get('term_name')
         term.origin = request.form.get('origin')
+        term.transcription = request.form.get('transcription')
+        term.grammar_notes = request.form.get('grammar_notes')
+        term.origin_word = request.form.get('origin_word')
+        term.etymology_note = request.form.get('etymology_note')
+        term.year_fixed = request.form.get('year_fixed')
         
         source_name = request.form.get('source_name')
         if source_name:
@@ -203,29 +242,62 @@ def edit_term(term_id):
             if status:
                 term.status_id = status.id
 
-        if term.definitions:
-            definition = term.definitions[0]
-            definition.definition_text = request.form.get('definition')
-            example_text = request.form.get('example')
-            if example_text:
-                if definition.examples:
-                    definition.examples[0].example_text = example_text
-                else:
-                    db.session.add(Example(definition_id=definition.id, example_text=example_text))
+        # Get lists of definitions, examples, style notes
+        definition_texts = request.form.getlist('definition_text[]')
+        style_notes = request.form.getlist('style_note[]')
+        example_texts = request.form.getlist('example_text[]')
+        
+        # Delete existing definitions and create new ones
+        for defn in term.definitions:
+            db.session.delete(defn)
+        db.session.flush()
+        
+        # Add new definitions
+        for i, def_text in enumerate(definition_texts):
+            if def_text.strip():
+                new_def = Definition(
+                    term_id=term.id, 
+                    definition_text=def_text,
+                    style_note=style_notes[i] if i < len(style_notes) and style_notes[i].strip() else None
+                )
+                db.session.add(new_def)
+                db.session.flush()
+                
+                # Add example for this definition if provided
+                if i < len(example_texts) and example_texts[i].strip():
+                    db.session.add(Example(definition_id=new_def.id, example_text=example_texts[i]))
+
+        # Delete existing relations and create new ones
+        for rel in term.outgoing_relations:
+            db.session.delete(rel)
+        db.session.flush()
+        
+        # Add semantic relations
+        related_term_ids = request.form.getlist('related_term_id[]')
+        relation_type_ids = request.form.getlist('relation_type_id[]')
+        for i, related_id in enumerate(related_term_ids):
+            if related_id.strip() and i < len(relation_type_ids) and relation_type_ids[i].strip():
+                db.session.add(TermRelation(
+                    term_1_id=term.id,
+                    term_2_id=int(related_id),
+                    relation_type_id=int(relation_type_ids[i])
+                ))
 
         db.session.commit()
         flash('Данные словарной статьи успешно обновлены.', 'success')
         return redirect(url_for('admin'))
 
-    def_text = term.definitions[0].definition_text if term.definitions else ''
-    ex_text = term.definitions[0].examples[0].example_text if (term.definitions and term.definitions[0].examples) else ''
+    # Prepare data for edit form
     src_name = term.source.resource_name if term.source else ''
     status_name = term.status.name if term.status else 'Черновик'
+    
+    # Get all terms for relation dropdown (excluding current term)
+    all_terms = Term.query.filter(Term.id != term.id).all()
+    relation_types = RelationType.query.all()
 
     return render_template('admin.html', term=term, 
-                           def_text=def_text, ex_text=ex_text, 
                            src_name=src_name, status_name=status_name, 
-                           editing=True)
+                           editing=True, all_terms=all_terms, relation_types=relation_types)
 
 @app.route('/admin/delete/<int:term_id>')
 @login_required
