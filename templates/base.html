@@ -81,6 +81,7 @@
             display: flex;
             gap: 2rem;
             align-items: center;
+            flex: 1;
         }
 
         .nav-link {
@@ -99,61 +100,47 @@
             background: var(--primary-glow);
         }
 
-        /* Закреплённая панель поиска */
-        .search-bar-fixed {
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(16px) saturate(180%);
-            border-bottom: 1px solid var(--border);
-            padding: 1.25rem 3rem;
-            z-index: 999;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        /* Поиск в хэдере */
+        .header-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
         }
 
-        .search-bar-fixed .search-container {
-            max-width: 800px;
-            margin: 0 auto;
+        .header-search-form {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
             align-items: center;
         }
 
-        .search-input-wrapper {
+        .header-search-input {
             flex: 1;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 14px 52px 14px 20px;
+            padding: 10px 48px 10px 16px;
             border: 2px solid var(--border);
             border-radius: 50px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-family: inherit;
             outline: none;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--card-bg);
         }
 
-        .search-input:focus {
+        .header-search-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 5px var(--primary-glow);
+            box-shadow: 0 0 0 3px var(--primary-glow);
         }
 
-        .search-input::placeholder {
+        .header-search-input::placeholder {
             color: #94a3b8;
         }
 
-        .voice-search-btn {
+        .header-voice-btn {
             position: absolute;
-            right: 10px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: none;
             background: transparent;
             color: var(--text-secondary);
@@ -165,29 +152,24 @@
             transition: all 0.2s;
         }
 
-        .voice-search-btn:hover {
+        .header-voice-btn:hover {
             background: #f1f5f9;
             color: var(--primary);
         }
 
-        .voice-search-btn.listening {
+        .header-voice-btn.listening {
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc2626;
             animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-            50% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
-        }
-
-        .search-submit {
-            padding: 14px 32px;
+        .header-search-submit {
+            padding: 10px 24px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -195,18 +177,16 @@
             box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
-        .search-submit:hover {
+        .header-search-submit:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
         }
 
-        .search-submit:active {
-            transform: translateY(0);
-        }
+        /* Закреплённая панель поиска - удалено, так как поиск перемещён в хэдер */
 
         /* Основной контент с отступом под фиксированные элементы */
         .main-wrapper {
-            margin-top: calc(var(--header-height) + 100px);
+            margin-top: var(--header-height);
             padding-top: 2rem;
         }
 
@@ -279,7 +259,7 @@
         .alphabet-sidebar {
             position: fixed;
             left: 32px;
-            top: calc(var(--header-height) + 110px);
+            top: calc(var(--header-height) + 16px);
             width: 56px;
             flex-shrink: 0;
             z-index: 100;
@@ -347,7 +327,7 @@
 
         /* Секции по буквам */
         .letter-section {
-            scroll-margin-top: calc(var(--header-height) + 150px);
+            scroll-margin-top: calc(var(--header-height) + 16px);
             margin-bottom: 2.5rem;
         }
 
@@ -610,19 +590,22 @@
             .logo {
                 font-size: 1.2rem;
             }
-            .search-bar-fixed {
-                padding: 0.75rem 1rem;
+            .nav-links {
+                display: none;
             }
-            .search-input {
-                padding: 10px 40px 10px 14px;
-                font-size: 0.95rem;
+            .header-search {
+                margin: 0 1rem;
             }
-            .search-submit {
-                padding: 10px 20px;
+            .header-search-input {
+                padding: 8px 40px 8px 12px;
                 font-size: 0.9rem;
             }
+            .header-search-submit {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
             .main-wrapper {
-                margin-top: calc(var(--header-height) + 75px);
+                margin-top: var(--header-height);
             }
         }
     </style>
@@ -638,6 +621,20 @@
                 </svg>
                 Словарь IT-сленга
             </a>
+            <div class="header-search">
+                <form method="get" action="{{ url_for('index') }}" class="header-search-form" style="position: relative;">
+                    <input type="text" id="headerSearchInput" name="q" class="header-search-input" placeholder="Поиск термина..." value="{{ query or '' }}" autocomplete="off">
+                    <button type="button" id="headerVoiceSearchBtn" class="header-voice-btn" title="Голосовой поиск">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                    <button type="submit" class="header-search-submit">Найти</button>
+                </form>
+            </div>
             <nav class="nav-links">
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('admin') }}" class="nav-link">Панель модератора</a>
@@ -649,32 +646,14 @@
         </div>
     </header>
 
-    <!-- Закреплённая панель поиска -->
-    <div class="search-bar-fixed">
-        <form method="get" action="{{ url_for('index') }}" class="search-container">
-            <div class="search-input-wrapper">
-                <input type="text" id="searchInput" name="q" class="search-input" placeholder="Поиск термина или нажмите микрофон..." value="{{ query or '' }}" autocomplete="off">
-                <button type="button" id="voiceSearchBtn" class="voice-search-btn" title="Голосовой поиск">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                        <line x1="12" y1="19" x2="12" y2="23"/>
-                        <line x1="8" y1="23" x2="16" y2="23"/>
-                    </svg>
-                </button>
-            </div>
-            <button type="submit" class="search-submit">Найти</button>
-        </form>
-    </div>
-
     <div class="main-wrapper">
         {% block content %}{% endblock %}
     </div>
 
     <script>
         // Голосовой поиск
-        const voiceSearchBtn = document.getElementById('voiceSearchBtn');
-        const searchInput = document.getElementById('searchInput');
+        const headerVoiceSearchBtn = document.getElementById('headerVoiceSearchBtn');
+        const headerSearchInput = document.getElementById('headerSearchInput');
 
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -685,27 +664,27 @@
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
-            voiceSearchBtn.addEventListener('click', () => {
+            headerVoiceSearchBtn.addEventListener('click', () => {
                 recognition.start();
-                voiceSearchBtn.classList.add('listening');
+                headerVoiceSearchBtn.classList.add('listening');
             });
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                searchInput.value = transcript;
+                headerSearchInput.value = transcript;
                 // Автоматическая отправка формы после распознавания
                 setTimeout(() => {
-                    searchInput.closest('form').submit();
+                    headerSearchInput.closest('form').submit();
                 }, 300);
             };
 
             recognition.onend = () => {
-                voiceSearchBtn.classList.remove('listening');
+                headerVoiceSearchBtn.classList.remove('listening');
             };
 
             recognition.onerror = (event) => {
                 console.error('Ошибка распознавания:', event.error);
-                voiceSearchBtn.classList.remove('listening');
+                headerVoiceSearchBtn.classList.remove('listening');
                 if (event.error === 'no-speech') {
                     alert('Речь не обнаружена. Попробуйте ещё раз.');
                 } else if (event.error === 'audio-capture') {
@@ -715,7 +694,7 @@
                 }
             };
         } else {
-            voiceSearchBtn.style.display = 'none';
+            headerVoiceSearchBtn.style.display = 'none';
             console.log('Web Speech API не поддерживается в этом браузере');
         }
     </script>
