@@ -1,3 +1,1 @@
-```
-*.log
-```
+Nothing should be ignored in this case, as only a template file (`templates/index.html`) was modified and there are no build artifacts, dependencies, or temporary files in the changes.
