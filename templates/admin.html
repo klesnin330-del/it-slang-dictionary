@@ -17,7 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for t in terms %}
+                    {% for t in all_terms %}
                     <tr style="border-bottom: 1px solid #e9ecef;">
                         <td style="padding: 12px;">
                             <strong>{{ t.term_name }}</strong><br>
@@ -110,15 +110,15 @@
                         <div class="relation-block" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px;">
                             <select name="related_term_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                                 <option value="">Выберите термин...</option>
-                                {% for t in terms %}
+                                {% for t in all_terms %}
                                 <option value="{{ t.id }}">{{ t.term_name }}</option>
                                 {% endfor %}
                             </select>
                             <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                                 <option value="">Тип связи...</option>
-                                <option value="1">Синоним</option>
-                                <option value="2">Антоним</option>
-                                <option value="3">Родственное понятие</option>
+                                <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+                                <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+                                <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
                             </select>
                         </div>
                     </div>
@@ -216,9 +216,9 @@
                                     {% endfor %}
                                 </select>
                                 <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
-                                    <option value="1" {% if rel.relation_type_id == 1 %}selected{% endif %}>Синоним</option>
-                                    <option value="2" {% if rel.relation_type_id == 2 %}selected{% endif %}>Антоним</option>
-                                    <option value="3" {% if rel.relation_type_id == 3 %}selected{% endif %}>Родственное понятие</option>
+                                    <option value="{{ relation_types[0].id if relation_types else 1 }}" {% if rel.relation_type_id == (relation_types[0].id if relation_types else 1) %}selected{% endif %}>Синоним</option>
+                                    <option value="{{ relation_types[1].id if relation_types else 2 }}" {% if rel.relation_type_id == (relation_types[1].id if relation_types else 2) %}selected{% endif %}>Антоним</option>
+                                    <option value="{{ relation_types[2].id if relation_types else 3 }}" {% if rel.relation_type_id == (relation_types[2].id if relation_types else 3) %}selected{% endif %}>Родственное понятие</option>
                                 </select>
                             </div>
                             {% endfor %}
@@ -232,9 +232,9 @@
                             </select>
                             <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                                 <option value="">Тип связи...</option>
-                                <option value="1">Синоним</option>
-                                <option value="2">Антоним</option>
-                                <option value="3">Родственное понятие</option>
+                                <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+                                <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+                                <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
                             </select>
                         </div>
                     </div>
@@ -297,9 +297,9 @@ function addRelation() {
         </select>
         <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
             <option value="">Тип связи...</option>
-            <option value="1">Синоним</option>
-            <option value="2">Антоним</option>
-            <option value="3">Родственное понятие</option>
+            <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+            <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+            <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
         </select>
     `;
     container.appendChild(newRel);
