@@ -1,13 +1,8 @@
 ```
-# Database
+# Database files
 *.db
 
-# Environment
-.env
-.env.local
-*.env.*
-
-# Dependencies
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -17,23 +12,27 @@ env/
 venv/
 .venv/
 .ENV
-.venv.bak/
+.ENV.local
+.env.*
+.env
+.python-version
 pip-log.txt
 pip-delete-this-directory.txt
 
 # Logs
 *.log
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Coverage reports
+.coverage
+coverage/
+htmlcov/
 
-# Editors
+# Environment
+.env
+.env.local
+.env.*
+
+# IDE specific
 .vscode/
 .idea/
 *.swp
@@ -41,12 +40,11 @@ Thumbs.db
 *.tmp
 
 # Build artifacts
-build/
 dist/
+build/
 *.egg-info/
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
+# OS generated files
+.DS_Store
+Thumbs.db
 ```
