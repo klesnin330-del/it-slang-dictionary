@@ -16,6 +16,9 @@
     <!-- Левый сайдбар с алфавитом -->
     <aside class="alphabet-sidebar">
         <div class="alphabet-sidebar-inner">
+            <div class="alphabet-sidebar-header">
+                <span class="alphabet-sidebar-title">AZ</span>
+            </div>
             {% set alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ' %}
             {% for letter in alphabet %}
                 <a href="#letter-{{ letter }}" class="alphabet-link" data-letter="{{ letter }}" title="Перейти к букве {{ letter }}">
