@@ -27,10 +27,11 @@ def index():
     terms_query = Term.query.filter(Term.status.has(name='Опубликован'))
 
     if query:
-        terms_query = terms_query.filter(
+        terms_query = terms_query.join(Definition).filter(
             or_(
                 Term.term_name.ilike(f'%{query}%'),
-                Term.origin.ilike(f'%{query}%')
+                Term.origin.ilike(f'%{query}%'),
+                Definition.definition_text.ilike(f'%{query}%')
             )
         )
 
@@ -59,10 +60,11 @@ def alphabet_filter(letter):
     )
     
     if query:
-        terms_query = terms_query.filter(
+        terms_query = terms_query.join(Definition).filter(
             or_(
                 Term.term_name.ilike(f'%{query}%'),
-                Term.origin.ilike(f'%{query}%')
+                Term.origin.ilike(f'%{query}%'),
+                Definition.definition_text.ilike(f'%{query}%')
             )
         )
     
