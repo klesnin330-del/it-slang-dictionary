@@ -27,11 +27,13 @@ def index():
     terms_query = Term.query.filter(Term.status.has(name='Опубликован'))
 
     if query:
+        # Поиск без учёта регистра с использованием ilike - ищем в названии, происхождении и определениях
+        search_pattern = f'%{query}%'
         terms_query = terms_query.join(Definition).filter(
             or_(
-                Term.term_name.ilike(f'%{query}%'),
-                Term.origin.ilike(f'%{query}%'),
-                Definition.definition_text.ilike(f'%{query}%')
+                Term.term_name.ilike(search_pattern),
+                Term.origin_word.ilike(search_pattern),  # Новое поле origin_word
+                Definition.definition_text.ilike(search_pattern)
             )
         )
 
@@ -60,11 +62,13 @@ def alphabet_filter(letter):
     )
     
     if query:
+        # Поиск без учёта регистра с использованием ilike
+        search_pattern = f'%{query}%'
         terms_query = terms_query.join(Definition).filter(
             or_(
-                Term.term_name.ilike(f'%{query}%'),
-                Term.origin.ilike(f'%{query}%'),
-                Definition.definition_text.ilike(f'%{query}%')
+                Term.term_name.ilike(search_pattern),
+                Term.origin_word.ilike(search_pattern),  # Новое поле origin_word
+                Definition.definition_text.ilike(search_pattern)
             )
         )
     
@@ -91,9 +95,13 @@ def api_suggestions():
     if len(query) < 2:
         return []
     
+    # Поиск без учёта регистра с использованием ilike
     terms = Term.query.filter(
         Term.status.has(name='Опубликован'),
-        Term.term_name.ilike(f'{query}%')
+        or_(
+            Term.term_name.ilike(f'{query}%'),
+            Term.origin_word.ilike(f'{query}%')
+        )
     ).limit(10).all()
     
     return [term.term_name for term in terms]

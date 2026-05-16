@@ -2,7 +2,32 @@
 {% block content %}
 <div class="card">
     <h1 class="term-title">{{ term.term_name }}</h1>
+    
+    <!-- Транскрипция и грамматические пометы -->
+    {% if term.transcription or term.grammar_notes %}
+    <div style="margin: 10px 0; display: flex; gap: 15px; flex-wrap: wrap;">
+        {% if term.transcription %}
+            <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;">{{ term.transcription }}</span>
+        {% endif %}
+        {% if term.grammar_notes %}
+            <span style="color: var(--text-secondary); font-size: 0.9em;">{{ term.grammar_notes }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Исходное слово / заимствование -->
+    {% if term.origin_word %}
+    <span class="origin">Исходное слово: {{ term.origin_word }}</span>
+    {% elif term.origin %}
     <span class="origin">Происхождение: {{ term.origin }}</span>
+    {% endif %}
+    
+    <!-- Годы фиксации -->
+    {% if term.year_fixed %}
+    <div style="margin: 10px 0;">
+        <small style="color: var(--text-secondary);">Годы фиксации: {{ term.year_fixed }}</small>
+    </div>
+    {% endif %}
     
     <!-- Категории -->
     <div style="margin: 10px 0;">
@@ -30,6 +55,14 @@
             </div>
         {% endif %}
     {% endfor %}
+
+    <!-- Этимологическая справка -->
+    {% if term.etymology_note %}
+    <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border);">
+        <strong>Этимологическая справка:</strong>
+        <p style="margin-top: 10px; color: var(--text-secondary);">{{ term.etymology_note }}</p>
+    </div>
+    {% endif %}
 
     <!-- Связанные термины (Синонимы) -->
     {% if term.outgoing_relations %}

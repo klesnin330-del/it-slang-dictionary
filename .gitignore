@@ -1,41 +1,5 @@
 ```
-# Python
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-
-# Logs
-*.log
-server.log
-
-# Dependencies
-.venv/
-venv/
-env/
-
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# System
-.DS_Store
-Thumbs.db
-
-# Coverage
-.coverage
-coverage/
-htmlcov/
-
-# Distribution
-dist/
-build/
-*.egg-info/
-
-# Environment
-.env
-.env.local
-*.env.*
+instance/
 ```

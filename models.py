@@ -52,7 +52,12 @@ class Term(db.Model):
     __tablename__ = 'terms'
     id = db.Column(db.Integer, primary_key=True)
     term_name = db.Column(db.String(200), nullable=False, index=True)
-    origin = db.Column(db.String(300))
+    transcription = db.Column(db.String(100))  # Транскрипция произношения
+    grammar_notes = db.Column(db.String(100))  # Грамматические пометы
+    origin_word = db.Column(db.String(300))  # Исходное слово / заимствование
+    etymology_note = db.Column(db.Text)  # Этимологическая справка
+    year_fixed = db.Column(db.String(50))  # Годы фиксации термина
+    origin = db.Column(db.String(300))  # Старое поле, оставляем для совместимости
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -61,10 +66,7 @@ class Term(db.Model):
     status_id = db.Column(db.Integer, db.ForeignKey('statuses.id'), nullable=False)
     status = db.relationship('Status', backref='terms')
     
-    definitions = db.relationship('Definition', backref='term', lazy=True, cascade='all, delete-orphan')
-    source_id = db.Column(db.Integer, db.ForeignKey('sources.id'), nullable=True)  # Один термин -> Один источник
-
-    # Связи
+    source_id = db.Column(db.Integer, db.ForeignKey('sources.id'), nullable=True)
     definitions = db.relationship('Definition', backref='term', lazy=True, cascade='all, delete-orphan')
     outgoing_relations = db.relationship('TermRelation', 
                                          foreign_keys='TermRelation.term_1_id', 
