@@ -21,7 +21,7 @@
                     <tr style="border-bottom: 1px solid #e9ecef;">
                         <td style="padding: 12px;">
                             <strong>{{ t.term_name }}</strong><br>
-                            <small style="color: #6c757d;">{{ t.origin }}</small>
+                            <small style="color: #6c757d;">{{ t.origin_word or t.origin }}</small>
                         </td>
                         <td style="padding: 12px;">
                             {% if t.status.name == 'Опубликован' %}
@@ -49,26 +49,82 @@
             <form method="post" action="{{ url_for('create_term') }}">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина</label>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина *</label>
                         <input type="text" name="term_name" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Происхождение</label>
-                        <input type="text" name="origin" placeholder="Например: Англ. Debug + суффикс" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Транскрипция</label>
+                        <input type="text" name="transcription" placeholder="[ˈdʲebəʐɨtʲ]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                     </div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Толкование</label>
-                    <input type="text" name="definition" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Исходное слово / заимствование</label>
+                        <input type="text" name="origin_word" placeholder="Например: англ. debug" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Грамматические пометы</label>
+                        <input type="text" name="grammar_notes" placeholder="Например: гл., несов. вид" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Пример употребления</label>
-                    <input type="text" name="example" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Годы фиксации</label>
+                        <input type="text" name="year_fixed" placeholder="Например: 1990-е — н.в." style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
+                        <input type="text" name="source_name" placeholder="Например: Habr, Stack Overflow" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
                 </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Этимологическая справка</label>
+                    <textarea name="etymology_note" rows="2" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;"></textarea>
+                </div>
+
+                <!-- Multiple definitions section -->
+                <div id="definitions-container" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Значения (можно добавить несколько)</label>
+                    <div class="definition-block" style="border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fafafa;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <strong>Значение №<span class="def-number">1</span></strong>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <input type="text" name="definition_text[]" placeholder="Толкование значения" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <input type="text" name="style_note[]" placeholder="Стилистическая помета (опционально)" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                            <input type="text" name="example_text[]" placeholder="Пример употребления" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addDefinition()" style="margin-bottom: 1.5rem;">+ Добавить ещё одно значение</button>
+
+                <!-- Semantic relations section -->
                 <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
-                    <input type="text" name="source_name" placeholder="Например: Habr, Stack Overflow, документация" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Семантические связи (синонимы/антонимы)</label>
+                    <div id="relations-container">
+                        <div class="relation-block" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px;">
+                            <select name="related_term_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <option value="">Выберите термин...</option>
+                                {% for t in all_terms %}
+                                <option value="{{ t.id }}">{{ t.term_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <option value="">Тип связи...</option>
+                                <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+                                <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+                                <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addRelation()">+ Добавить связь</button>
                 </div>
+
                 <button type="submit" class="btn btn-primary">Сохранить запись</button>
             </form>
         </div>
@@ -77,26 +133,114 @@
         <div class="card">
             <h3>Редактирование записи: «{{ term.term_name }}»</h3>
             <form method="post">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина</label>
-                    <input type="text" name="term_name" value="{{ term.term_name }}" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Название термина *</label>
+                        <input type="text" name="term_name" value="{{ term.term_name }}" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Транскрипция</label>
+                        <input type="text" name="transcription" value="{{ term.transcription or '' }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Происхождение</label>
-                    <input type="text" name="origin" value="{{ term.origin }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Исходное слово / заимствование</label>
+                        <input type="text" name="origin_word" value="{{ term.origin_word or '' }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Грамматические пометы</label>
+                        <input type="text" name="grammar_notes" value="{{ term.grammar_notes or '' }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Толкование</label>
-                    <textarea name="definition" required style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px; height: 80px;">{{ def_text }}</textarea>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Годы фиксации</label>
+                        <input type="text" name="year_fixed" value="{{ term.year_fixed or '' }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
+                        <input type="text" name="source_name" value="{{ src_name }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
                 </div>
+                
                 <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Пример употребления</label>
-                    <input type="text" name="example" value="{{ ex_text }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Этимологическая справка</label>
+                    <textarea name="etymology_note" rows="2" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">{{ term.etymology_note or '' }}</textarea>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
-                    <input type="text" name="source_name" value="{{ src_name }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+
+                <!-- Multiple definitions section for edit -->
+                <div id="definitions-container" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Значения (можно добавить несколько)</label>
+                    {% if term.definitions %}
+                        {% for defn in term.definitions %}
+                        <div class="definition-block" style="border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fafafa;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <strong>Значение №<span class="def-number">{{ loop.index }}</span></strong>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <input type="text" name="definition_text[]" value="{{ defn.definition_text }}" placeholder="Толкование значения" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <input type="text" name="style_note[]" value="{{ defn.style_note or '' }}" placeholder="Стилистическая помета" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <input type="text" name="example_text[]" value="{{ defn.examples[0].example_text if defn.examples else '' }}" placeholder="Пример употребления" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="definition-block" style="border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fafafa;">
+                            <div style="margin-bottom: 10px;">
+                                <input type="text" name="definition_text[]" placeholder="Толкование значения" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <input type="text" name="style_note[]" placeholder="Стилистическая помета" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <input type="text" name="example_text[]" placeholder="Пример употребления" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
+                <button type="button" class="btn btn-secondary" onclick="addDefinition()" style="margin-bottom: 1.5rem;">+ Добавить ещё одно значение</button>
+
+                <!-- Semantic relations section for edit -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Семантические связи (синонимы/антонимы)</label>
+                    <div id="relations-container">
+                        {% if term.outgoing_relations %}
+                            {% for rel in term.outgoing_relations %}
+                            <div class="relation-block" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px;">
+                                <select name="related_term_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                    {% for t in all_terms %}
+                                    <option value="{{ t.id }}" {% if t.id == rel.term_2_id %}selected{% endif %}>{{ t.term_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                    <option value="{{ relation_types[0].id if relation_types else 1 }}" {% if rel.relation_type_id == (relation_types[0].id if relation_types else 1) %}selected{% endif %}>Синоним</option>
+                                    <option value="{{ relation_types[1].id if relation_types else 2 }}" {% if rel.relation_type_id == (relation_types[1].id if relation_types else 2) %}selected{% endif %}>Антоним</option>
+                                    <option value="{{ relation_types[2].id if relation_types else 3 }}" {% if rel.relation_type_id == (relation_types[2].id if relation_types else 3) %}selected{% endif %}>Родственное понятие</option>
+                                </select>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="relation-block" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px;">
+                            <select name="related_term_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <option value="">Выберите термин...</option>
+                                {% for t in all_terms %}
+                                <option value="{{ t.id }}">{{ t.term_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                                <option value="">Тип связи...</option>
+                                <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+                                <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+                                <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addRelation()">+ Добавить связь</button>
+                </div>
+
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Статус публикации</label>
                     <select name="status" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
@@ -110,4 +254,55 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+let definitionCount = {{ term.definitions|length if editing else 1 }};
+
+function addDefinition() {
+    definitionCount++;
+    const container = document.getElementById('definitions-container');
+    const newDef = document.createElement('div');
+    newDef.className = 'definition-block';
+    newDef.style = 'border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fafafa;';
+    newDef.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong>Значение №<span class="def-number">${definitionCount}</span></strong>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <input type="text" name="definition_text[]" placeholder="Толкование значения" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <input type="text" name="style_note[]" placeholder="Стилистическая помета" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+            <input type="text" name="example_text[]" placeholder="Пример употребления" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+        </div>
+    `;
+    container.appendChild(newDef);
+    // Update all definition numbers
+    document.querySelectorAll('.def-number').forEach((el, idx) => {
+        el.textContent = idx + 1;
+    });
+}
+
+function addRelation() {
+    const container = document.getElementById('relations-container');
+    const newRel = document.createElement('div');
+    newRel.className = 'relation-block';
+    newRel.style = 'display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px;';
+    newRel.innerHTML = `
+        <select name="related_term_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+            <option value="">Выберите термин...</option>
+            {% for t in (all_terms if editing else terms) %}
+            <option value="{{ t.id }}">{{ t.term_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="relation_type_id[]" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+            <option value="">Тип связи...</option>
+            <option value="{{ relation_types[0].id if relation_types else 1 }}">Синоним</option>
+            <option value="{{ relation_types[1].id if relation_types else 2 }}">Антоним</option>
+            <option value="{{ relation_types[2].id if relation_types else 3 }}">Родственное понятие</option>
+        </select>
+    `;
+    container.appendChild(newRel);
+}
+</script>
 {% endblock %}
