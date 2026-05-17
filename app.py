@@ -135,7 +135,9 @@ def logout():
 @login_required
 def admin():
     terms = Term.query.order_by(Term.created_at.desc()).all()
-    return render_template('admin.html', terms=terms, editing=False)
+    all_terms = terms  # For dropdown in JS
+    relation_types = RelationType.query.all()
+    return render_template('admin.html', terms=terms, all_terms=all_terms, relation_types=relation_types, editing=False)
 
 @app.route('/admin/create', methods=['POST'])
 @login_required
