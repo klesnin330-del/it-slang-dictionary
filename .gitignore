@@ -1,34 +1,41 @@
 ```
+# Database files
+*.db
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Environment
+.Python
+env/
+venv/
+.venv/
+.ENV
+.ENV.local
 .env
 .env.local
-*.env.*
+.env.*
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Logs
 *.log
 
 # Temporary files
 *.tmp
-*.swp
-*.swo
+*.temp
+*~
+.swp
+.swo
 
-# Editors
-.vscode/
-.idea/
-
-# Dependencies
-.venv/
-venv/
-node_modules/
-
-# Build artifacts
-dist/
-build/
-target/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 ```
