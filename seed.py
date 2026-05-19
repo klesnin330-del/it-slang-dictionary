@@ -17,7 +17,8 @@ def seed_data():
         statuses = [
             Status(name='Новый', description='Термин на проверке'),
             Status(name='Одобрен', description='Термин одобрен модератором'),
-            Status(name='Отклонён', description='Термин отклонён')
+            Status(name='Отклонён', description='Термин отклонён'),
+            Status(name='Опубликован', description='Термин опубликован на сайте')
         ]
         db.session.add_all(statuses)
         db.session.commit()
@@ -38,7 +39,7 @@ def seed_data():
                 origin_word=origin,
                 grammar_notes=grammar,
                 user_id=default_user.id,
-                status_id=statuses[1].id  # Одобрен
+                status_id=statuses[3].id  # Опубликован
             )
             db.session.add(term)
             db.session.flush()
