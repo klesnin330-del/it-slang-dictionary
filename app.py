@@ -25,24 +25,37 @@ def make_case_insensitive_search(field, pattern):
     Создаёт регистронезависимое условие поиска для SQLite.
     Работает как с кириллицей, так и с латиницей.
     
-    Для SQLite используем комбинацию подходов:
-    1. Для латиницы работает func.lower()
-    2. Для кириллицы используем LIKE с вариантами регистра (верхний/нижний/заглавный)
+    Для SQLite используем генерацию всех вариантов регистра,
+    т.к. встроенные функции UPPER/LOWER не работают с кириллицей.
     """
-    # Преобразуем паттерн в разные варианты регистра
-    pattern_lower = pattern.lower()
-    pattern_upper = pattern.upper()
-    pattern_title = pattern_lower.capitalize() if pattern_lower else pattern_lower
+    # Генерируем основные варианты регистра для паттерна
+    # Убираем проценты для обработки, потом добавляем обратно
+    clean_pattern = pattern.replace('%', '')
     
-    # Создаём условия для разных вариантов регистра
-    # Это необходимо потому что SQLite не корректно работает с lower() для кириллицы
-    return or_(
-        field.like(pattern),  # Точное совпадение
-        field.like(pattern_lower),  # lowercase
-        field.like(pattern_upper),  # uppercase  
-        field.like(pattern_title),  # Title case
-        func.lower(field).like(pattern_lower)  # Для латиницы
-    )
+    if not clean_pattern:
+        return field.like(pattern)
+    
+    # Генерируем варианты: оригинал, lower, upper, title
+    variants = set()
+    variants.add(pattern)  # Оригинал с %
+    variants.add(f'%{clean_pattern.lower()}%')
+    variants.add(f'%{clean_pattern.upper()}%')
+    variants.add(f'%{clean_pattern.capitalize()}%')
+    
+    # Для коротких слов (1-3 буквы) генерируем все комбинации регистра
+    if len(clean_pattern) <= 3:
+        for i in range(2**len(clean_pattern)):
+            variant = ''
+            for j, char in enumerate(clean_pattern):
+                if (i >> j) & 1:
+                    variant += char.upper()
+                else:
+                    variant += char.lower()
+            variants.add(f'%{variant}%')
+    
+    # Создаём OR условие для всех вариантов
+    conditions = [field.like(v) for v in variants]
+    return or_(*conditions)
 
 @app.route('/')
 def index():
@@ -80,14 +93,9 @@ def alphabet_filter(letter):
     
     terms_query = Term.query.filter(Term.status.has(name='Опубликован'))
     
-    # Фильтр по первой букве (регистронезависимый через func.lower)
-    letter_upper = letter.upper()
-    letter_lower = letter.lower()
+    # Фильтр по первой букве (регистронезависимый через func.upper)
     terms_query = terms_query.filter(
-        or_(
-            func.lower(Term.term_name).like(f'{letter_lower}%'),
-            func.lower(Term.term_name).like(f'{letter_upper}%')
-        )
+        func.upper(Term.term_name).like(f'{letter.upper()}%')
     )
     
     if query:
