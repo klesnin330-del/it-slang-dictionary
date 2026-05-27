@@ -23,9 +23,17 @@
     {% endif %}
     
     <!-- Годы фиксации -->
-    {% if term.year_fixed %}
+    {% if term.year_fixed or term.last_year_fixed %}
     <div style="margin: 10px 0;">
-        <small style="color: var(--text-secondary);">Годы фиксации: {{ term.year_fixed }}</small>
+        <small style="color: var(--text-secondary);">
+            {% if term.year_fixed and term.last_year_fixed %}
+                Годы фиксации: {{ term.year_fixed }} (последний год: {{ term.last_year_fixed }})
+            {% elif term.year_fixed %}
+                Годы фиксации: {{ term.year_fixed }}
+            {% elif term.last_year_fixed %}
+                Последний год фиксации: {{ term.last_year_fixed }}
+            {% endif %}
+        </small>
     </div>
     {% endif %}
     
