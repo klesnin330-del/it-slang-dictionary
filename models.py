@@ -56,7 +56,8 @@ class Term(db.Model):
     grammar_notes = db.Column(db.String(100))  # Грамматические пометы
     origin_word = db.Column(db.String(300))  # Исходное слово / заимствование
     etymology_note = db.Column(db.Text)  # Этимологическая справка
-    year_fixed = db.Column(db.String(50))  # Годы фиксации термина
+    year_fixed = db.Column(db.String(50))  # Годы фиксации термина (диапазон)
+    last_year_fixed = db.Column(db.Integer)  # Последний год фиксации жаргонного слова
     origin = db.Column(db.String(300))  # Старое поле, оставляем для совместимости
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

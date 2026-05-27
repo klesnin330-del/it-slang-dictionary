@@ -64,6 +64,15 @@
                                     {% elif term.origin %}
                                         <p class="term-origin">{{ term.origin }}</p>
                                     {% endif %}
+                                    {% if term.last_year_fixed or term.year_fixed %}
+                                        <p class="term-year" style="color: var(--text-secondary); font-size: 0.85rem;">
+                                            {% if term.last_year_fixed %}
+                                                Последний год фиксации: {{ term.last_year_fixed }}
+                                            {% elif term.year_fixed %}
+                                                Годы фиксации: {{ term.year_fixed }}
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
                                     {% if term.categories %}
                                         <div class="term-categories">
                                             {% for cat in term.categories %}
@@ -126,6 +135,15 @@
                                                 <p class="term-origin">Исходное слово: {{ term.origin_word }}</p>
                                             {% elif term.origin %}
                                                 <p class="term-origin">{{ term.origin }}</p>
+                                            {% endif %}
+                                            {% if term.last_year_fixed or term.year_fixed %}
+                                                <p class="term-year" style="color: var(--text-secondary); font-size: 0.85rem;">
+                                                    {% if term.last_year_fixed %}
+                                                        Последний год фиксации: {{ term.last_year_fixed }}
+                                                    {% elif term.year_fixed %}
+                                                        Годы фиксации: {{ term.year_fixed }}
+                                                    {% endif %}
+                                                </p>
                                             {% endif %}
                                             {% if term.categories %}
                                                 <div class="term-categories">

@@ -3,7 +3,8 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Term, Definition, Example, Source, Category, Status, TermCategory, RelationType, TermRelation
 from config import Config
-from sqlalchemy import or_
+from sqlalchemy import or_, func
+import re
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,6 +20,43 @@ login_manager.login_message = 'Для доступа к панели управ�
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+def make_case_insensitive_search(field, pattern):
+    """
+    Создаёт регистронезависимое условие поиска для SQLite.
+    Работает как с кириллицей, так и с латиницей.
+    
+    Для SQLite используем генерацию всех вариантов регистра,
+    т.к. встроенные функции UPPER/LOWER не работают с кириллицей.
+    """
+    # Генерируем основные варианты регистра для паттерна
+    # Убираем проценты для обработки, потом добавляем обратно
+    clean_pattern = pattern.replace('%', '')
+    
+    if not clean_pattern:
+        return field.like(pattern)
+    
+    # Генерируем варианты: оригинал, lower, upper, title
+    variants = set()
+    variants.add(pattern)  # Оригинал с %
+    variants.add(f'%{clean_pattern.lower()}%')
+    variants.add(f'%{clean_pattern.upper()}%')
+    variants.add(f'%{clean_pattern.capitalize()}%')
+    
+    # Для коротких слов (1-3 буквы) генерируем все комбинации регистра
+    if len(clean_pattern) <= 3:
+        for i in range(2**len(clean_pattern)):
+            variant = ''
+            for j, char in enumerate(clean_pattern):
+                if (i >> j) & 1:
+                    variant += char.upper()
+                else:
+                    variant += char.lower()
+            variants.add(f'%{variant}%')
+    
+    # Создаём OR условие для всех вариантов
+    conditions = [field.like(v) for v in variants]
+    return or_(*conditions)
+
 @app.route('/')
 def index():
     query = request.args.get('q', '').strip()
@@ -27,13 +65,13 @@ def index():
     terms_query = Term.query.filter(Term.status.has(name='Опубликован'))
 
     if query:
-        # Поиск без учёта регистра с использованием ilike - ищем в названии, происхождении и определениях
+        # Регистронезависимый поиск - ищем в названии, происхождении и определениях
         search_pattern = f'%{query}%'
         terms_query = terms_query.join(Definition).filter(
             or_(
-                Term.term_name.ilike(search_pattern),
-                Term.origin_word.ilike(search_pattern),  # Новое поле origin_word
-                Definition.definition_text.ilike(search_pattern)
+                make_case_insensitive_search(Term.term_name, search_pattern),
+                make_case_insensitive_search(Term.origin_word, search_pattern),
+                make_case_insensitive_search(Definition.definition_text, search_pattern)
             )
         )
 
@@ -55,20 +93,19 @@ def alphabet_filter(letter):
     
     terms_query = Term.query.filter(Term.status.has(name='Опубликован'))
     
-    # Фильтр по первой букве (регистронезависимый)
-    letter = letter.upper()
+    # Фильтр по первой букве (регистронезависимый через func.upper)
     terms_query = terms_query.filter(
-        Term.term_name.ilike(f'{letter}%')
+        func.upper(Term.term_name).like(f'{letter.upper()}%')
     )
     
     if query:
-        # Поиск без учёта регистра с использованием ilike
+        # Регистронезависимый поиск
         search_pattern = f'%{query}%'
         terms_query = terms_query.join(Definition).filter(
             or_(
-                Term.term_name.ilike(search_pattern),
-                Term.origin_word.ilike(search_pattern),  # Новое поле origin_word
-                Definition.definition_text.ilike(search_pattern)
+                make_case_insensitive_search(Term.term_name, search_pattern),
+                make_case_insensitive_search(Term.origin_word, search_pattern),
+                make_case_insensitive_search(Definition.definition_text, search_pattern)
             )
         )
     
@@ -95,12 +132,12 @@ def api_suggestions():
     if len(query) < 2:
         return []
     
-    # Поиск без учёта регистра с использованием ilike
+    # Регистронезависимый поиск с использованием func.lower
     terms = Term.query.filter(
         Term.status.has(name='Опубликован'),
         or_(
-            Term.term_name.ilike(f'{query}%'),
-            Term.origin_word.ilike(f'{query}%')
+            make_case_insensitive_search(Term.term_name, f'{query}%'),
+            make_case_insensitive_search(Term.origin_word, f'{query}%')
         )
     ).limit(10).all()
     
@@ -149,6 +186,7 @@ def create_term():
     origin_word = request.form.get('origin_word')
     etymology_note = request.form.get('etymology_note')
     year_fixed = request.form.get('year_fixed')
+    last_year_fixed = request.form.get('last_year_fixed')
     source_name = request.form.get('source_name')
     
     # Get lists of definitions, examples, style notes
@@ -179,6 +217,7 @@ def create_term():
             origin_word=origin_word,
             etymology_note=etymology_note,
             year_fixed=year_fixed,
+            last_year_fixed=int(last_year_fixed) if last_year_fixed and last_year_fixed.isdigit() else None,
             user_id=current_user.id,
             status_id=published_status.id,
             source_id=source.id if source else None
@@ -228,6 +267,8 @@ def edit_term(term_id):
         term.origin_word = request.form.get('origin_word')
         term.etymology_note = request.form.get('etymology_note')
         term.year_fixed = request.form.get('year_fixed')
+        last_year_fixed = request.form.get('last_year_fixed')
+        term.last_year_fixed = int(last_year_fixed) if last_year_fixed and last_year_fixed.isdigit() else None
         
         source_name = request.form.get('source_name')
         if source_name:

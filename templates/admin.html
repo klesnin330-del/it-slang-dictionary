@@ -69,10 +69,14 @@
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Годы фиксации</label>
                         <input type="text" name="year_fixed" placeholder="Например: 1990-е — н.в." style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Последний год фиксации</label>
+                        <input type="number" name="last_year_fixed" placeholder="Например: 2025" min="1900" max="2100" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
@@ -155,10 +159,14 @@
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Годы фиксации</label>
                         <input type="text" name="year_fixed" value="{{ term.year_fixed or '' }}" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Последний год фиксации</label>
+                        <input type="number" name="last_year_fixed" value="{{ term.last_year_fixed or '' }}" placeholder="Например: 2025" min="1900" max="2100" style="width: 100%; padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px;">
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Источник информации</label>
