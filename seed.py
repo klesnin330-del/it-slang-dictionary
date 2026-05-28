@@ -1,7 +1,6 @@
-import os
-import sys
 from app import app, db
 from models import Term, Definition, Example, TermRelation, RelationType, User, Status, Source
+from werkzeug.security import generate_password_hash
 
 def seed_data():
     with app.app_context():
@@ -11,7 +10,7 @@ def seed_data():
         print("База данных очищена и создана заново.")
 
         # Создадим пользователя по умолчанию и статусы, если их нет
-        default_user = User(username='admin', password='admin123', role='admin')
+        default_user = User(username='admin', password=generate_password_hash('admin123'), role='admin')
         db.session.add(default_user)
         
         statuses = [

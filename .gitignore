@@ -8,9 +8,6 @@ __pycache__/
 # Database
 instance/dictionary.db
 
-# Logs
-*.log
-
 # Environment
 .env
 .env.local
@@ -19,27 +16,38 @@ instance/dictionary.db
 # Dependencies
 .venv/
 venv/
-node_modules/
+lib/
+lib64/
 
 # Build artifacts
-dist/
 build/
-target/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
 
 # Editors
 .vscode/
 .idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Coverage
-.coverage
-coverage/
-htmlcov/
+*.swp
+*.swo
 
 # Testing
+.coverage
+htmlcov/
+.coverage.*
+.cache
 .pytest_cache/
 .mypy_cache/
+
+# Distribution / packaging
+.Python
+*.so
+*.dylib
+*.dll
 ```
