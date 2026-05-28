@@ -1,15 +1,6 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
 # Database
 instance/dictionary.db
-
-# Logs
-*.log
 
 # Environment
 .env
@@ -21,25 +12,65 @@ instance/dictionary.db
 venv/
 node_modules/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.pot
+*.po
+*~
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
 # Build artifacts
 dist/
 build/
-target/
+*.egg-info/
+.eggs/
+.installed.cfg
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl
+*.egg
 
 # Editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log
+
 # Coverage
-.coverage
 coverage/
 htmlcov/
 
-# Testing
-.pytest_cache/
-.mypy_cache/
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
 ```
