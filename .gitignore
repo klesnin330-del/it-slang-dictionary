@@ -1,10 +1,4 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
 # Database
 instance/dictionary.db
 
@@ -16,20 +10,46 @@ instance/dictionary.db
 # Dependencies
 .venv/
 venv/
-lib/
-lib64/
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.pot
+*.po
+*~
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
 
 # Build artifacts
-build/
 dist/
+build/
 *.egg-info/
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
+.eggs/
+.installed.cfg
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl
+*.egg
 
 # Editors
 .vscode/
@@ -37,17 +57,20 @@ Thumbs.db
 *.swp
 *.swo
 
-# Testing
-.coverage
-htmlcov/
-.coverage.*
-.cache
-.pytest_cache/
-.mypy_cache/
+# OS
+.DS_Store
+Thumbs.db
 
-# Distribution / packaging
-.Python
-*.so
-*.dylib
-*.dll
+# Logs
+*.log
+
+# Coverage
+coverage/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
 ```
