@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h1 class="term-title">{{ term.term_name }}</h1>
+    
+    <!-- Транскрипция и грамматические пометы -->
+    {% if term.transcription or term.grammar_notes %}
+    <div style="margin: 10px 0; display: flex; gap: 15px; flex-wrap: wrap;">
+        {% if term.transcription %}
+            <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;">{{ term.transcription }}</span>
+        {% endif %}
+        {% if term.grammar_notes %}
+            <span style="color: var(--text-secondary); font-size: 0.9em;">{{ term.grammar_notes }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Исходное слово / заимствование -->
+    {% if term.origin_word %}
+    <span class="origin">Исходное слово: {{ term.origin_word }}</span>
+    {% elif term.origin %}
+    <span class="origin">Происхождение: {{ term.origin }}</span>
+    {% endif %}
+    
+    <!-- Годы фиксации -->
+    {% if term.year_fixed or term.last_year_fixed %}
+    <div style="margin: 10px 0;">
+        <small style="color: var(--text-secondary);">
+            {% if term.year_fixed and term.last_year_fixed %}
+                Годы фиксации: {{ term.year_fixed }} (последний год: {{ term.last_year_fixed }})
+            {% elif term.year_fixed %}
+                Годы фиксации: {{ term.year_fixed }}
+            {% elif term.last_year_fixed %}
+                Последний год фиксации: {{ term.last_year_fixed }}
+            {% endif %}
+        </small>
+    </div>
+    {% endif %}
+    
+    <!-- Категории -->
+    <div style="margin: 10px 0;">
+        {% for cat in term.categories %}
+            <span class="badge">{{ cat.name }}</span>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <!-- Значения и примеры -->
+    <h3>Значения:</h3>
+    {% for def in term.definitions %}
+        <div class="definition">
+            {{ def.definition_text }}
+            {% if def.style_note %} <small>({{ def.style_note }})</small>{% endif %}
+        </div>
+        
+        <!-- Примеры для ЭТОГО значения -->
+        {% if def.examples %}
+            <div style="margin: 5px 0 15px 20px; border-left: 2px solid #ccc; padding-left: 10px;">
+                {% for ex in def.examples %}
+                    <p style="margin: 5px 0; font-style: italic; color: #555;">«{{ ex.example_text }}»</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Этимологическая справка -->
+    {% if term.etymology_note %}
+    <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border);">
+        <strong>Этимологическая справка:</strong>
+        <p style="margin-top: 10px; color: var(--text-secondary);">{{ term.etymology_note }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Семантические связи -->
+    {% set synonyms = [] %}
+    {% set antonyms = [] %}
+    {% set related = [] %}
+    {% for rel in term.outgoing_relations %}
+        {% if rel.relation_type.type_name == 'Синоним' %}
+            {% set _ = synonyms.append(rel) %}
+        {% elif rel.relation_type.type_name == 'Антоним' %}
+            {% set _ = antonyms.append(rel) %}
+        {% else %}
+            {% set _ = related.append(rel) %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if synonyms or antonyms or related %}
+    <div style="margin-top: 25px; padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border);">
+        <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.2em; color: var(--text-primary);">Семантические связи</h3>
+        
+        {% if synonyms %}
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #198754;">Синонимы:</strong>
+            <div style="margin-top: 8px;">
+                {% for rel in synonyms %}
+                    <a href="{{ url_for('term_detail', term_id=rel.term_2.id) }}" class="badge" style="background:#198754; color:white; text-decoration:none; margin-right: 5px; margin-bottom: 5px; display:inline-block;">
+                        {{ rel.term_2.term_name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if antonyms %}
+        <div style="margin-bottom: 15px;">
+            <strong style="color: #dc3545;">Антонимы:</strong>
+            <div style="margin-top: 8px;">
+                {% for rel in antonyms %}
+                    <a href="{{ url_for('term_detail', term_id=rel.term_2.id) }}" class="badge" style="background:#dc3545; color:white; text-decoration:none; margin-right: 5px; margin-bottom: 5px; display:inline-block;">
+                        {{ rel.term_2.term_name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if related %}
+        <div>
+            <strong style="color: #0d6efd;">Родственные понятия:</strong>
+            <div style="margin-top: 8px;">
+                {% for rel in related %}
+                    <a href="{{ url_for('term_detail', term_id=rel.term_2.id) }}" class="badge" style="background:#0d6efd; color:white; text-decoration:none; margin-right: 5px; margin-bottom: 5px; display:inline-block;">
+                        {{ rel.term_2.term_name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+<a href="{{ url_for('index') }}" class="btn" style="margin-top: 10px; color: #0d6efd;">← Назад</a>
+{% endblock %}

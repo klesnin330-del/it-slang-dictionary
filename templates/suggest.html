@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Предложить слово{% endblock %}
+{% block content %}
+<div class="admin-shell">
+    <section class="admin-hero plain-hero">
+        <div>
+            <span class="eyebrow">Пользовательская заявка</span>
+            <h1>Предложить термин для словаря</h1>
+            <p>Заполните минимум название и краткое определение. Остальные поля можно оставить пустыми: администратор уточнит их при модерации.</p>
+        </div>
+    </section>
+
+    <section class="admin-card editor-card">
+        <form method="post" id="suggestForm">
+            <div class="required-note">
+                <strong>Обязательно:</strong> название термина и краткое определение.
+                <strong>По желанию:</strong> исходное слово, пример употребления, этимологическая заметка.
+            </div>
+
+            <label>Название термина *
+                <input type="text" name="term_name" id="suggestTermName" required autocomplete="off">
+            </label>
+            <div id="duplicateWarning" class="duplicate-warning" hidden></div>
+
+            <label>Краткое определение *
+                <textarea name="definition_text[]" rows="4" required placeholder="Например: ошибка в программном коде, которая приводит к сбою."></textarea>
+            </label>
+
+            <div class="form-grid two-columns">
+                <label>Исходное слово или заимствование
+                    <input type="text" name="origin_word" placeholder="Например: bug (англ.)">
+                </label>
+                <label>Пример употребления
+                    <input type="text" name="example_text[]" placeholder="Например: Нашел баг в модуле авторизации.">
+                </label>
+            </div>
+
+            <label>Комментарий или этимологическая заметка
+                <textarea name="etymology_note" rows="3" placeholder="Можно указать контекст, источник или почему термин важен."></textarea>
+            </label>
+
+            <button type="submit" class="btn">Отправить на проверку</button>
+        </form>
+    </section>
+
+    <section class="admin-card">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Мои заявки</span>
+                <h2>История предложенных терминов</h2>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Термин</th>
+                        <th>Статус</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in user_terms %}
+                    <tr>
+                        <td><strong>{{ item.term_name }}</strong></td>
+                        <td><span class="status-pill status-{{ item.status.id }}">{{ item.status.name }}</span></td>
+                        <td>{{ item.created_at.strftime('%d.%m.%Y') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3">Вы еще не отправляли заявки.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+const suggestName = document.getElementById('suggestTermName');
+const duplicateWarning = document.getElementById('duplicateWarning');
+let duplicateTimer;
+
+async function checkDuplicates() {
+    const query = suggestName.value.trim();
+    if (query.length < 2) {
+        duplicateWarning.hidden = true;
+        return;
+    }
+    const response = await fetch(`/api/term-matches?q=${encodeURIComponent(query)}`);
+    const matches = await response.json();
+    if (!matches.length) {
+        duplicateWarning.hidden = true;
+        return;
+    }
+    duplicateWarning.innerHTML = `
+        <strong>В базе уже есть похожие слова:</strong>
+        <ul>${matches.map(item => `<li>${item.term_name} <span>${item.status}, ${item.score}% совпадения</span></li>`).join('')}</ul>
+        <p>Если вы предлагаете омоним или новое значение, можно продолжить заполнение формы.</p>`;
+    duplicateWarning.hidden = false;
+}
+
+suggestName.addEventListener('input', () => {
+    clearTimeout(duplicateTimer);
+    duplicateTimer = setTimeout(checkDuplicates, 250);
+});
+</script>
+{% endblock %}

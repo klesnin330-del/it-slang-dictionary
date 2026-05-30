@@ -1,0 +1,11 @@
+<div class="definition-block">
+    <div class="block-header">
+        <strong>Значение №<span class="def-number">{{ loop.index if loop is defined else 1 }}</span></strong>
+        <button type="button" class="icon-btn" onclick="removeDefinition(this)" title="Удалить значение">×</button>
+    </div>
+    <input type="text" name="definition_text[]" value="{{ definition.definition_text if definition is defined else '' }}" placeholder="Толкование значения" required>
+    <div class="form-grid two-columns compact-grid">
+        <input type="text" name="style_note[]" value="{{ definition.style_note or '' if definition is defined else '' }}" placeholder="Стилистическая помета">
+        <input type="text" name="example_text[]" value="{{ definition.examples[0].example_text if definition is defined and definition.examples else '' }}" placeholder="Пример употребления">
+    </div>
+</div>

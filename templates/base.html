@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IT-Slang Dictionary{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --header-height: 88px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Шапка сайта */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+            justify-self: start;
+        }
+
+        .logo:hover {
+            opacity: 0.85;
+        }
+
+        .logo-version {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-self: end;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.875rem;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        /* Поиск в хэдере */
+        .header-search {
+            justify-self: center;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-search-form {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+            position: relative;
+            width: 100%;
+            min-width: 400px;
+        }
+
+        .header-search-input {
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-bg);
+            width: 100%;
+            min-width: 200px;
+        }
+
+        .header-search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .header-search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .header-voice-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .header-voice-btn:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .header-voice-btn.listening {
+            background: #fee2e2;
+            color: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header-search-submit {
+            padding: 10px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .header-search-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        /* Закреплённая панель поиска - удалено, так как поиск перемещён в хэдер */
+
+        /* Основной контент с отступом под фиксированные элементы */
+        .main-wrapper {
+            margin-top: var(--header-height);
+            padding-top: 2rem;
+        }
+
+        /* Остальные стили для контента */
+        .page-header {
+            text-align: center;
+            padding: 1rem 0 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .main-layout {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 3rem;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .content-area {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Категории */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 2rem;
+            padding: 0 0 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-filters a {
+            padding: 8px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1.5px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-secondary);
+        }
+
+        .category-filters a:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .category-filters a.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Сайдбар с алфавитом */
+        .alphabet-sidebar {
+            position: fixed;
+            left: 32px;
+            top: calc(var(--header-height) + 16px);
+            width: 56px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .alphabet-sidebar-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--card-bg);
+            padding: 14px 8px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            scrollbar-width: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .alphabet-sidebar-inner:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .alphabet-sidebar-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .alphabet-link {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.775rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            background: transparent;
+        }
+
+        .alphabet-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.12);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .alphabet-link.active {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Отступ для контента чтобы не наезжал на сайдбар */
+        .content-area {
+            flex: 1;
+            min-width: 0;
+            padding-left: 70px; /* Отступ под фиксированный сайдбар */
+        }
+
+        /* Секции по буквам */
+        .letter-section {
+            scroll-margin-top: calc(var(--header-height) + 16px);
+            margin-bottom: 2.5rem;
+        }
+
+        .letter-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .letter-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .letter-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+        }
+
+        /* Карточки терминов */
+        .term-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            gap: 1.75rem;
+            flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .term-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .term-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+        }
+
+        .term-card:hover::before {
+            opacity: 1;
+        }
+
+        .term-info {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .term-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem;
+        }
+
+        .term-info h3 a {
+            text-decoration: none;
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+        .term-info h3 a:hover {
+            color: var(--primary);
+        }
+
+        .term-origin {
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .term-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .term-categories span {
+            padding: 3px 10px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .term-definition {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text);
+            padding: 0.75rem 0 0.75rem 1rem;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .term-examples {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            width: 300px;
+            max-width: 300px;
+            min-width: 300px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .term-examples-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .term-examples p {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0.4rem 0;
+            padding-left: 0.5rem;
+            border-left: 2px solid #cbd5e1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        /* Стили для страницы термина */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .term-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .origin {
+            color: var(--text-secondary);
+            font-style: italic;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-right: 6px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .badge:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .definition {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .definition:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 1.5rem 0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            .alphabet-sidebar {
+                display: none;
+            }
+            .main-layout {
+                padding: 0 1rem 2rem;
+            }
+            .term-card {
+                flex-direction: column;
+            }
+            .term-examples {
+                min-width: auto;
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-content {
+                padding: 0 1rem;
+                grid-template-columns: 1fr;
+            }
+            .logo {
+                font-size: 1.2rem;
+                justify-self: center;
+                margin-bottom: 0.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .header-search {
+                margin: 0;
+                max-width: 100%;
+            }
+            .header-search-input {
+                padding: 8px 40px 8px 12px;
+                font-size: 0.9rem;
+            }
+            .header-search-submit {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .main-wrapper {
+                margin-top: calc(var(--header-height) + 20px);
+            }
+        }
+    </style>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="site-header">
+        <div class="header-content">
+            <a href="{{ url_for('index') }}" class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                Словарь IT-сленга
+            </a>
+            <div class="header-search">
+                <form method="get" action="{{ url_for('index') }}" class="header-search-form">
+                    <input type="text" id="headerSearchInput" name="q" class="header-search-input" placeholder="Поиск термина..." value="{{ query or '' }}" autocomplete="off">
+                    <button type="button" id="headerVoiceSearchBtn" class="header-voice-btn" title="Голосовой поиск" style="order: 2;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                    <button type="submit" class="header-search-submit" style="order: 3;">Найти</button>
+                </form>
+            </div>
+            <nav class="nav-links">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <a href="{{ url_for('admin') }}" class="nav-link">Панель администратора</a>
+                    {% else %}
+                        <a href="{{ url_for('suggest_term') }}" class="nav-link">Предложить слово</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="nav-link">Выйти</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">Войти</a>
+                    <a href="{{ url_for('register') }}" class="nav-link">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-wrap">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Голосовой поиск
+        const headerVoiceSearchBtn = document.getElementById('headerVoiceSearchBtn');
+        const headerSearchInput = document.getElementById('headerSearchInput');
+        let suggestionTimer;
+        const suggestionsBox = document.createElement('div');
+        suggestionsBox.className = 'suggestions-box';
+        suggestionsBox.hidden = true;
+        headerSearchInput.closest('form').appendChild(suggestionsBox);
+
+        headerSearchInput.addEventListener('input', () => {
+            clearTimeout(suggestionTimer);
+            const query = headerSearchInput.value.trim();
+            if (query.length < 2) {
+                suggestionsBox.hidden = true;
+                return;
+            }
+            suggestionTimer = setTimeout(async () => {
+                const response = await fetch(`/api/suggestions?q=${encodeURIComponent(query)}`);
+                const suggestions = await response.json();
+                suggestionsBox.innerHTML = suggestions.map(item => `<div class="suggestion-item">${item}</div>`).join('');
+                suggestionsBox.hidden = suggestions.length === 0;
+                suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        headerSearchInput.value = item.textContent;
+                        headerSearchInput.closest('form').submit();
+                    });
+                });
+            }, 220);
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.header-search-form')) suggestionsBox.hidden = true;
+        });
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.lang = 'ru-RU';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            headerVoiceSearchBtn.addEventListener('click', () => {
+                recognition.start();
+                headerVoiceSearchBtn.classList.add('listening');
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                // Преобразуем первую букву в заглавную, а остальные в строчные
+                const capitalizedTranscript = transcript.charAt(0).toUpperCase() + transcript.slice(1).toLowerCase();
+                headerSearchInput.value = capitalizedTranscript;
+                // Автоматическая отправка формы после распознавания
+                setTimeout(() => {
+                    headerSearchInput.closest('form').submit();
+                }, 300);
+            };
+
+            recognition.onend = () => {
+                headerVoiceSearchBtn.classList.remove('listening');
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Ошибка распознавания:', event.error);
+                headerVoiceSearchBtn.classList.remove('listening');
+                if (event.error === 'no-speech') {
+                    alert('Речь не обнаружена. Попробуйте ещё раз.');
+                } else if (event.error === 'audio-capture') {
+                    alert('Микрофон не найден. Проверьте подключение.');
+                } else if (event.error !== 'aborted') {
+                    alert('Не удалось распознать речь. Попробуйте ещё раз.');
+                }
+            };
+        } else {
+            headerVoiceSearchBtn.style.display = 'none';
+            console.log('Web Speech API не поддерживается в этом браузере');
+        }
+    </script>
+    <footer style="text-align: center; padding: 2rem 0; color: var(--text-secondary); font-size: 0.9rem; border-top: 1px solid var(--border); margin-top: 3rem;">
+        <p>&copy; 2025 IT-Slang Dictionary. Все права защищены.</p>
+    </footer>
+</body>
+</html>

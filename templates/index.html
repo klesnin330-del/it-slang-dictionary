@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Словарь IT-сленга{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Словарь IT-сленга</h1>
+    {% if query %}
+        <p>Результаты поиска по запросу: <strong>"{{ query }}"</strong></p>
+    {% else %}
+        <p>База знаний современного IT-сленга</p>
+    {% endif %}
+</div>
+
+<div class="main-layout">
+    <!-- Левый сайдбар с алфавитом -->
+    <aside class="alphabet-sidebar">
+        <div class="alphabet-sidebar-inner">
+            {% set alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ' %}
+            {% for letter in alphabet %}
+                <a href="#letter-{{ letter }}" class="alphabet-link" data-letter="{{ letter }}" title="Перейти к букве {{ letter }}">
+                    {{ letter }}
+                </a>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <!-- Контент -->
+    <div class="content-area">
+        <!-- Фильтры категорий -->
+        <div class="category-filters">
+            <a href="{{ url_for('index') }}" class="{% if not request.args.get('category') %}active{% endif %}">
+                Все термины
+            </a>
+            {% for cat in categories %}
+                <a href="{{ url_for('index', category=cat.id) }}" class="{% if request.args.get('category') == cat.id|string %}active{% endif %}">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Список терминов -->
+        {% if terms %}
+            {% if query %}
+                <!-- Режим поиска: показываем все результаты без группировки -->
+                <div class="letter-section">
+                    <div class="terms-list">
+                        {% for term in terms %}
+                            <article class="term-card">
+                                <div class="term-info">
+                                    <h3><a href="{{ url_for('term_detail', term_id=term.id) }}">{{ term.term_name }}</a></h3>
+                                    {% if term.transcription or term.grammar_notes %}
+                                    <div style="margin: 5px 0; display: flex; gap: 12px; flex-wrap: wrap;">
+                                        {% if term.transcription %}
+                                            <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif; font-size: 0.9rem;">{{ term.transcription }}</span>
+                                        {% endif %}
+                                        {% if term.grammar_notes %}
+                                            <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ term.grammar_notes }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    {% if term.origin_word %}
+                                        <p class="term-origin">Исходное слово: {{ term.origin_word }}</p>
+                                    {% elif term.origin %}
+                                        <p class="term-origin">{{ term.origin }}</p>
+                                    {% endif %}
+                                    {% if term.last_year_fixed or term.year_fixed %}
+                                        <p class="term-year" style="color: var(--text-secondary); font-size: 0.85rem;">
+                                            {% if term.last_year_fixed %}
+                                                Последний год фиксации: {{ term.last_year_fixed }}
+                                            {% elif term.year_fixed %}
+                                                Годы фиксации: {{ term.year_fixed }}
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                                    {% if term.categories %}
+                                        <div class="term-categories">
+                                            {% for cat in term.categories %}
+                                                <span>{{ cat.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if term.definitions %}
+                                        <p class="term-definition">{{ term.definitions[0].definition_text }}</p>
+                                    {% endif %}
+                                </div>
+                                {% if term.definitions and term.definitions[0].examples %}
+                                    <div class="term-examples">
+                                        <p class="term-examples-title">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                            </svg>
+                                            Примеры
+                                        </p>
+                                        {% for example in term.definitions[0].examples %}
+                                            <p>{{ example.example_text }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <!-- Обычный режим: группировка по буквам -->
+                {% set alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ' %}
+                {% for letter in alphabet %}
+                    {% set letter_terms = [] %}
+                    {% for term in terms %}
+                        {% if term.term_name.upper()[0] == letter %}
+                            {% set _ = letter_terms.append(term) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if letter_terms %}
+                        <div id="letter-{{ letter }}" class="letter-section">
+                            <div class="letter-header">
+                                <h2>{{ letter }}</h2>
+                            </div>
+                            <div class="terms-list">
+                                {% for term in letter_terms %}
+                                    <article class="term-card">
+                                        <div class="term-info">
+                                            <h3><a href="{{ url_for('term_detail', term_id=term.id) }}">{{ term.term_name }}</a></h3>
+                                            {% if term.transcription or term.grammar_notes %}
+                                            <div style="margin: 5px 0; display: flex; gap: 12px; flex-wrap: wrap;">
+                                                {% if term.transcription %}
+                                                    <span style="color: var(--text-secondary); font-style: italic; font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif; font-size: 0.9rem;">{{ term.transcription }}</span>
+                                                {% endif %}
+                                                {% if term.grammar_notes %}
+                                                    <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ term.grammar_notes }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            {% if term.origin_word %}
+                                                <p class="term-origin">Исходное слово: {{ term.origin_word }}</p>
+                                            {% elif term.origin %}
+                                                <p class="term-origin">{{ term.origin }}</p>
+                                            {% endif %}
+                                            {% if term.last_year_fixed or term.year_fixed %}
+                                                <p class="term-year" style="color: var(--text-secondary); font-size: 0.85rem;">
+                                                    {% if term.last_year_fixed %}
+                                                        Последний год фиксации: {{ term.last_year_fixed }}
+                                                    {% elif term.year_fixed %}
+                                                        Годы фиксации: {{ term.year_fixed }}
+                                                    {% endif %}
+                                                </p>
+                                            {% endif %}
+                                            {% if term.categories %}
+                                                <div class="term-categories">
+                                                    {% for cat in term.categories %}
+                                                        <span>{{ cat.name }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                            {% if term.definitions %}
+                                                <p class="term-definition">{{ term.definitions[0].definition_text }}</p>
+                                            {% endif %}
+                                        </div>
+                                        {% if term.definitions and term.definitions[0].examples %}
+                                            <div class="term-examples">
+                                                <p class="term-examples-title">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                                    </svg>
+                                                    Примеры
+                                                </p>
+                                                {% for example in term.definitions[0].examples %}
+                                                    <p>{{ example.example_text }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <h3>Ничего не найдено</h3>
+                {% if query %}
+                    <p>По запросу "{{ query }}" не найдено терминов.</p>
+                    <p>Попробуйте изменить запрос или выбрать другую категорию.</p>
+                {% else %}
+                    <p>В базе данных пока нет терминов.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Плавная прокрутка к буквам
+    document.querySelectorAll('.alphabet-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                const offset = 180;
+                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - offset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                // Обновляем активный класс
+                document.querySelectorAll('.alphabet-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            }
+        });
+    });
+
+    // Подсветка активной буквы при скролле
+    window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY + 200;
+        const sections = document.querySelectorAll('.letter-section');
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+            const letter = section.id.replace('letter-', '');
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                document.querySelectorAll('.alphabet-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.letter === letter) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
