@@ -21,6 +21,16 @@
     {% elif term.origin %}
     <span class="origin">Происхождение: {{ term.origin }}</span>
     {% endif %}
+
+    {% if term.source %}
+    <div style="margin: 10px 0;">
+        <small style="color: var(--text-secondary);">Источник: {{ term.source.resource_name }}</small>
+        {% if term.source.url %}
+            <br>
+            <a href="{{ term.source.url }}" target="_blank" rel="noopener noreferrer">Ссылка на источник</a>
+        {% endif %}
+    </div>
+    {% endif %}
     
     <!-- Годы фиксации -->
     {% if term.year_fixed or term.last_year_fixed %}

@@ -124,6 +124,9 @@
                     <input type="text" name="source_name" value="{{ src_name if editing else '' }}" placeholder="Например: Habr">
                 </label>
             </div>
+            <label>Ссылка на источник
+                <input type="url" name="source_url" value="{{ src_url if editing else '' }}" placeholder="https://example.com/article">
+            </label>
 
             <label>Этимологическая справка
                 <textarea name="etymology_note" rows="3">{{ term.etymology_note or '' if editing else '' }}</textarea>

@@ -217,12 +217,20 @@ def build_relation_recommendations(term_name, definitions, origin_word="", exclu
     return ordered[:12]
 
 
-def get_or_create_source(source_name):
-    if not source_name:
+def get_or_create_source(source_name, source_url=""):
+    source_name = source_name.strip()
+    source_url = source_url.strip()
+    if not source_name and not source_url:
         return None
-    source = Source.query.filter_by(resource_name=source_name).first()
+    if not source_name:
+        source_name = "Источник по ссылке"
+    source = Source.query.filter_by(resource_name=source_name, url=source_url or None).first()
     if not source:
-        source = Source(resource_name=source_name, source_type="Указан модератором")
+        source = Source(
+            resource_name=source_name,
+            source_type="Указан модератором",
+            url=source_url or None,
+        )
         db.session.add(source)
         db.session.flush()
     return source
@@ -312,7 +320,10 @@ def fill_term_from_form(term, form):
     term.year_fixed = form.get("year_fixed")
     last_year = form.get("last_year_fixed", "")
     term.last_year_fixed = int(last_year) if last_year.isdigit() else None
-    source = get_or_create_source(form.get("source_name", "").strip())
+    source = get_or_create_source(
+        form.get("source_name", ""),
+        form.get("source_url", ""),
+    )
     term.source_id = source.id if source else None
 
 
@@ -536,6 +547,7 @@ def edit_term(term_id):
         "admin.html",
         term=term,
         src_name=term.source.resource_name if term.source else "",
+        src_url=term.source.url if term.source and term.source.url else "",
         status_name=term.status.name,
         editing=True,
         all_terms=Term.query.filter(Term.id != term.id).order_by(Term.term_name.asc()).all(),
